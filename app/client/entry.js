@@ -21,7 +21,7 @@ var Typer={
 	accessCountimer:null,
 	index:0, // current cursor position
 	speed:3, // speed of the Typer
-	file:"assets/code_file.txt", //file, must be setted
+	file:"/assets/code_file.txt", //file, must be setted
 	accessCount:0, //times alt is pressed for Access Granted
 	deniedCount:0, //times caps is pressed for Access Denied
 	init: function(){// inizialize Hacker Typer
