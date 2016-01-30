@@ -1,9 +1,4 @@
-@import url(http://fonts.googleapis.com/css?family=VT323);body {
-  background: #000000;
-  color: #00FF00;
-  font-family: monospace; }
-
-.accessGranted {
+@import url(http://fonts.googleapis.com/css?family=VT323);.accessGranted {
   position: absolute;
   top: 200px;
   background: #333;

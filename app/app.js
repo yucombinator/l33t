@@ -7,9 +7,23 @@ app.set('views', __dirname + '/public');
 var server = require('http').createServer(app);
 var io = require('socket.io')(server);
 
+//TODO(yuchen) we might want to use redis for this at some point
+var users = {}; 
+
 /* SOCKET HANDLERS */
-io.on('connection', function(){ 
-  
+io.on('connection', function(socket){ 
+  socket.on('joinRoom', function(params) {
+    var {username, roomID} = params;
+    //join room with specified ID
+    socket.room = roomID;
+    socket.userName = username;
+    socket.join(roomID);
+    socket.broadcast.to(socket.roomomID).emit('updatechat', 'SERVER', socket.userName + ' has connected to this game');
+
+  });
+  socket.on('disconnect', function() {
+    socket.broadcast.to(socket.room).emit('updatechat', 'SERVER', socket.userName + ' has left this game');
+  });
 });
 
 /* WEB HANDLERS */
