@@ -80,6 +80,9 @@ setInterval(() => {
   for (var key in rooms) {
       const room = rooms[key];
       //send score
+      if(!room.average){
+        room.average = 0;
+      }
       io.to(key).emit('newAverage', {
         value: room.average,
       });
