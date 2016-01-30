@@ -9,6 +9,7 @@ var io = require('socket.io')(server);
 
 //TODO(yuchen) we might want to use redis for this at some point
 var users = {}; 
+var rooms = {};
 
 /* SOCKET HANDLERS */
 io.on('connection', function(socket){ 
@@ -17,6 +18,21 @@ io.on('connection', function(socket){
     const roomID = params.room;
     
     //join room with specified ID
+    if (rooms[roomID]){
+      //room exists
+      const room = rooms[roomID];
+      room.users++;
+    } else {
+      //create room
+      rooms[roomID] = {
+        average: 0,
+        getNumHackers: function(){
+          const room = io.sockets.adapter.rooms[roomID];
+          return Object.keys(room).length;
+        },
+      };
+    }
+    
     socket.room = roomID;
     socket.userName = username;
     socket.join(roomID);
@@ -29,19 +45,40 @@ io.on('connection', function(socket){
     console.log(msg + ": " + socket.room);
   });
   
+  socket.on('sendScore', function(params) {
+    if (socket.room){
+      //must be in a room
+      const rate = params.rate; //out of 100
+      const room = rooms[socket.room];
+      const numHackers = room.getNumHackers();
+      const oldAvg = room.average;
+      
+      const newavg = oldAvg * (numHackers-1)/numHackers + rate /numHackers;
+      rooms[socket.room].average = newavg;
+    }
+  });
+  
   socket.on('disconnect', function() {
-    socket.broadcast.to(socket.room).emit('event', 'SERVER', socket.userName + ' has left this game');
+    const roomID = socket.room;
+    socket.broadcast.to(roomID).emit('event', 'SERVER', socket.userName + ' has left this game');
+    if(rooms[roomID] && rooms[roomID].getNumHackers() == 0){
+      rooms[roomID] = undefined;
+    }
   });
 });
 
 /* WEB HANDLERS */
 app.get('/', function (req, res) {
-  res.render('index', { title: 'Users online?' });
+  res.render('index', { room: '0' });
 });
 
 app.get('/join/:id', function (req, res) {
   const roomID = req.params.id;
   res.render('index', { room: roomID });
+});
+
+app.get('/stats', function (req, res) {
+  res.render('stats', { users: users, rooms: rooms });
 });
 
 server.listen(3000, function () {

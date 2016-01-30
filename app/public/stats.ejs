@@ -1,0 +1,19 @@
+<head> 
+  <meta charset="utf-8"> 
+  <title>l33t haz0r</title>
+  <link href="/styles/client.css" rel="stylesheet" type="text/css" /> 
+</head> 
+<body class="noisy"> 
+  <div class="frame">
+    <div class="piece output">
+      <div id="header" class="header">
+        Some cool stats
+        <br>
+        
+          Rooms: <%= JSON.stringify(rooms, null, 4) %>
+          Users: <%= JSON.stringify(users, null, 4) %>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
