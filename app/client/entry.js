@@ -29,6 +29,9 @@ socket.on('connect', function () {
   	mGoalSliderPosition = msg.value / 100 * SLIDER_WIDTH;
     console.log(mGoalSliderPosition);
   });
+  socket.on('broadcast-join', function(msg) {
+    console.log(msg);
+  });
 });
 
 var _this = this;
