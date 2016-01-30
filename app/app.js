@@ -15,7 +15,7 @@ var rooms = {};
 
 /* SOCKET HANDLERS */
 io.on('connection', (socket) => { 
-  socket.on('joinRoom', (params) => {
+  socket.on('joinRoom', (params, cb) => {
     const username = params.username;
     const roomID = params.room;
     
@@ -94,6 +94,12 @@ setInterval(() => {
   for (var key in rooms) {
       const room = rooms[key];
       //send score
+      if (!room) {
+        continue;
+      }
+      if(!room.average){
+        room.average = 0;
+      }
       io.to(key).emit('newAverage', {
         value: room.average,
       });
