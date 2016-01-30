@@ -23,11 +23,23 @@ io.on('connection', (socket) => {
     if (rooms[roomID]){
       //room exists
       const room = rooms[roomID];
-      room.users++;
+
     } else {
       //create room
       rooms[roomID] = {
         average: 0,
+        getHackerList: () => {
+          const room = io.sockets.adapter.rooms[roomID];
+          if (room) {
+            var hackers = Object.keys(room);
+            return hackers.reduce(function(previousValue, currentValue, currentIndex, array) {
+                    previousValue.push(currentValue.username)
+                    return previousValue;
+                   },[]);
+          } else {
+            return [];
+          }
+        },
         getNumHackers: () => {
           const room = io.sockets.adapter.rooms[roomID];
           if (room)
@@ -44,10 +56,12 @@ io.on('connection', (socket) => {
     
     const msg = socket.userName + ' has connected to this game';
     
-    socket.broadcast.to(socket.room).emit('message', {
+    /*socket.broadcast.to(socket.room).emit('message', {
       value: msg,
+    });*/
+    io.to(roomID).emit('broadcast-join', {
+      names: rooms[roomID].getHackerList(),
     });
-    //io.to('some room').emit('some event'):
     
     console.log(msg + ": " + socket.room);
   });
