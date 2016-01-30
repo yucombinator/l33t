@@ -4,16 +4,19 @@
  */
 export default class Typer {
 
-	constructor(console){
+	constructor(console, keyPressedCallBack){
 		this.mFile = "/assets/code_file.txt";
 		this.mIndex = 0;
 		this.mSpeed = 3;
 
 		this.mConsole = console;
+		this.mKeyPressedCallback = keyPressedCallBack;
+
 		const _this = this;
 
-		$( document ).keydown(
+		$( document ).keypress(
 			function ( event ) { 
+				_this.mKeyPressedCallback(event.keyCode);
 				_this.addText.bind(_this)( event ); //Capture the keydown event and call the addText, this is executed on page load
 			}
 		);
