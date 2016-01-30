@@ -10,9 +10,14 @@ var MAX_KEY_UNIQUENESS = 40;
 var UNIQUENESS_SCORE_WEIGHT = 0.5;
 var SPEED_SCORE_WEIGHT = 0.5;
 
+var SLIDER_MAX_ANIMATION_SPEED = 10;
+
 var SLIDER_INACTIVE = "=";
 var SLIDER_ACTIVE = "||";
 var SLIDER_WIDTH = 130;
+
+var mCurrentSliderPosition = 0;
+var mGoalSliderPosition = 0;
 
 var socket = io();
 socket.on('connect', function () {
@@ -21,22 +26,8 @@ socket.on('connect', function () {
     room: roomID,
   });
   socket.on('newAverage', function(msg){
-  	var newAverage = msg.value / 100;
-  	var preActive = SLIDER_WIDTH * newAverage;
-  	var postActive = SLIDER_WIDTH - preActive - SLIDER_ACTIVE.length;
-
-  	var sliderString = "";
-  	for (var i = 0 ; i < preActive ; i++) {
-  		sliderString = sliderString + SLIDER_INACTIVE;
-  	}
-  	sliderString = sliderString + SLIDER_ACTIVE;
-
-  	for (var i = 0 ; i < postActive ; i++) {
-  		sliderString = sliderString + SLIDER_INACTIVE;
-  	}
-
-  	$("#header").html(sliderString);
-    console.log(msg);
+  	mGoalSliderPosition = msg.value / 100 * SLIDER_WIDTH;
+    console.log(mGoalSliderPosition);
   });
 });
 
@@ -71,3 +62,26 @@ setInterval(function() {
 	})
 	mKeyPresses = [];
 }, 1000); // inizialize timer for sending key press factor over socket
+
+setInterval(function() {
+	var speedFactor = Math.abs(mCurrentSliderPosition - mGoalSliderPosition) / SLIDER_WIDTH * SLIDER_MAX_ANIMATION_SPEED;
+	if (mGoalSliderPosition < mCurrentSliderPosition) {
+		mCurrentSliderPosition -= speedFactor; 
+	} else if (mGoalSliderPosition > mCurrentSliderPosition) {
+		mCurrentSliderPosition += speedFactor;
+	}
+
+  	var preActive = mCurrentSliderPosition;
+  	var postActive = SLIDER_WIDTH - preActive - SLIDER_ACTIVE.length;
+  	var sliderString = "";
+  	for (var i = 0 ; i < preActive ; i++) {
+  		sliderString = sliderString + SLIDER_INACTIVE;
+  	}
+  	sliderString = sliderString + SLIDER_ACTIVE;
+
+  	for (var i = 0 ; i < postActive ; i++) {
+  		sliderString = sliderString + SLIDER_INACTIVE;
+  	}
+
+  	$("#header").html(sliderString);
+}, 100); // inizialize timer for animating the slider position
