@@ -1,4 +1,6 @@
 var express = require('express');
+var helpers = require('./helpers');
+
 var app = express();
 app.set('view engine', 'ejs');  
 app.use(express.static(__dirname + '/public'));
@@ -92,7 +94,12 @@ app.get('/', (req, res) => {
   res.render('index', { room: '0' });
 });
 
-app.get('/join/:id', (req, res) => {
+app.get('/play', (req, res) => {
+  const newRoom = helpers.generateRoomId();
+  res.redirect('/play/' + newRoom);
+});
+
+app.get('/play/:id', (req, res) => {
   const roomID = req.params.id;
   res.render('index', { room: roomID });
 });
