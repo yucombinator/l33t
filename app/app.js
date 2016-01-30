@@ -13,17 +13,24 @@ var users = {};
 /* SOCKET HANDLERS */
 io.on('connection', function(socket){ 
   socket.on('joinRoom', function(params) {
-    var username = params.username;
-    var roomID = params.room;
+    const username = params.username;
+    const roomID = params.room;
+    
     //join room with specified ID
     socket.room = roomID;
     socket.userName = username;
     socket.join(roomID);
-    socket.broadcast.to(socket.roomomID).emit('updatechat', 'SERVER', socket.userName + ' has connected to this game');
-
+    
+    const msg = socket.userName + ' has connected to this game';
+    
+    socket.broadcast.to(socket.room).emit('event', msg);
+    //io.to('some room').emit('some event'):
+    
+    console.log(msg + ": " + socket.room);
   });
+  
   socket.on('disconnect', function() {
-    socket.broadcast.to(socket.room).emit('updatechat', 'SERVER', socket.userName + ' has left this game');
+    socket.broadcast.to(socket.room).emit('event', 'SERVER', socket.userName + ' has left this game');
   });
 });
 
@@ -34,7 +41,7 @@ app.get('/', function (req, res) {
 
 app.get('/join/:id', function (req, res) {
   const roomID = req.params.id;
-  res.render('index', { id: roomID });
+  res.render('index', { room: roomID });
 });
 
 server.listen(3000, function () {

@@ -1,6 +1,18 @@
 import io from 'socket.io-client';
 require('./scss/style.scss');
 require('./scss/crt_style.css');
+
+var socket = io();
+socket.on('connect', function () {
+  socket.emit('joinRoom', {
+    username: 'glados',
+    room: roomID,
+  });
+  socket.on('event', function(msg){
+    console.log(msg);
+  });
+});
+
 /*
 *(c) Copyright 2011 Simone Masiero. Some Rights Reserved. 
 *This work is licensed under a Creative Commons Attribution-Noncommercial-Share Alike 3.0 License
