@@ -1,6 +1,6 @@
 import io from 'socket.io-client';
 require('./scss/style.scss');
-
+require('./scss/crt_style.css');
 /*
 *(c) Copyright 2011 Simone Masiero. Some Rights Reserved. 
 *This work is licensed under a Creative Commons Attribution-Noncommercial-Share Alike 3.0 License
@@ -25,7 +25,7 @@ var Typer={
 	accessCount:0, //times alt is pressed for Access Granted
 	deniedCount:0, //times caps is pressed for Access Denied
 	init: function(){// inizialize Hacker Typer
-		accessCountimer=setInterval(function(){Typer.updLstChr();},500); // inizialize timer for blinking cursor
+		this.accessCountimer=setInterval(function(){Typer.updLstChr();},500); // inizialize timer for blinking cursor
 		$.get(Typer.file,function(data){// get the text file
 			Typer.text=data;// save the textfile in Typer.text
 		});
@@ -92,7 +92,8 @@ var Typer={
 			var rts= new RegExp("\\s", "g"); // whitespace regex
 			var rtt= new RegExp("\\t", "g"); // tab regex
 			$("#console").html(text.replace(rtn,"<br/>").replace(rtt,"&nbsp;&nbsp;&nbsp;&nbsp;").replace(rts,"&nbsp;"));// replace newline chars with br, tabs with 4 space and blanks with an html blank
-			window.scrollBy(0,50); // scroll to make sure bottom is always visible
+			$('#console').scrollTop($('#console')[0].scrollHeight);
+			//$("#console").scrollBy(0,50); // scroll to make sure bottom is always visible
 		}
 		if ( key.preventDefault && key.keyCode != 122 ) { // prevent F11(fullscreen) from being blocked
 			key.preventDefault()
@@ -110,3 +111,6 @@ var Typer={
 			this.write("|"); // else write it
 	}
 }
+
+
+Typer.init();
