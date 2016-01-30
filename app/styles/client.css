@@ -1,4 +1,14 @@
-@import url(http://fonts.googleapis.com/css?family=VT323);.accessGranted {
+@import url(http://fonts.googleapis.com/css?family=VT323);.header {
+  display: block;
+  height: 10%;
+  width: 80%; }
+
+.scrollable {
+  height: 90%;
+  width: 80%;
+  overflow: scroll; }
+
+.accessGranted {
   position: absolute;
   top: 200px;
   background: #333;

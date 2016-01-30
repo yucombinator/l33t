@@ -13,7 +13,8 @@ var users = {};
 /* SOCKET HANDLERS */
 io.on('connection', function(socket){ 
   socket.on('joinRoom', function(params) {
-    var {username, roomID} = params;
+    var username = params.username;
+    var roomID = params.room;
     //join room with specified ID
     socket.room = roomID;
     socket.userName = username;
@@ -28,7 +29,7 @@ io.on('connection', function(socket){
 
 /* WEB HANDLERS */
 app.get('/', function (req, res) {
-  res.render('index', { title: 'The index page!' });
+  res.render('index', { title: 'Users online?' });
 });
 
 app.get('/join/:id', function (req, res) {

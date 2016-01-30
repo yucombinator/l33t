@@ -5,7 +5,8 @@
     "test": "./node_modules/jscs/bin/jscs .",
     "watch": "node ./node_modules/webpack/bin/webpack.js --watch --devtool inline-source-map",
     "build": "NODE_ENV=production node ./node_modules/webpack/bin/webpack.js -p",
-    "server": "nodemon ./app/app.js"
+    "server": "nodemon --harmony ./app/app.js",
+    "production": "node --harmony ./app/app.js"
   },
   "dependencies": {
     "css-loader": "^0.23.1",
