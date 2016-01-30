@@ -22,14 +22,14 @@ var mGoalSliderPosition = 0;
 var socket = io();
 socket.on('connect', function () {
   socket.emit('joinRoom', {
-    username: 'glados',
+    username: null,
     room: roomID,
   });
   socket.on('newAverage', function(msg){
   	mGoalSliderPosition = msg.value / 100 * SLIDER_WIDTH;
     console.log(mGoalSliderPosition);
   });
-  socket.on('broadcast-join', function(msg) {
+  socket.on('broadcast-userschanged', function(msg) {
     console.log(msg);
   });
 });
