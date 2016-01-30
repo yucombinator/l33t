@@ -79,7 +79,7 @@ a:hover {
   -webkit-animation: crt-output 10ms infinite;
           animation: crt-output 10ms infinite;
   background-color: #031e11;
-  overflow: scroll;
+  overflow: hidden;
   position: absolute;
   padding: 3rem 2rem;
   pointer-events: auto;
