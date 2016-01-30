@@ -12,8 +12,8 @@ var users = {};
 var rooms = {};
 
 /* SOCKET HANDLERS */
-io.on('connection', function(socket){ 
-  socket.on('joinRoom', function(params) {
+io.on('connection', (socket) => { 
+  socket.on('joinRoom', (params) => {
     const username = params.username;
     const roomID = params.room;
     
@@ -26,9 +26,12 @@ io.on('connection', function(socket){
       //create room
       rooms[roomID] = {
         average: 0,
-        getNumHackers: function(){
+        getNumHackers: () => {
           const room = io.sockets.adapter.rooms[roomID];
-          return Object.keys(room).length;
+          if (room)
+            return Object.keys(room).length;
+          else
+            return 0;
         },
       };
     }
@@ -45,7 +48,7 @@ io.on('connection', function(socket){
     console.log(msg + ": " + socket.room);
   });
   
-  socket.on('sendScore', function(params) {
+  socket.on('sendScore', (params) => {
     if (socket.room){
       //must be in a room
       const rate = params.rate; //out of 100
@@ -58,7 +61,7 @@ io.on('connection', function(socket){
     }
   });
   
-  socket.on('disconnect', function() {
+  socket.on('disconnect', () => {
     const roomID = socket.room;
     socket.broadcast.to(roomID).emit('event', 'SERVER', socket.userName + ' has left this game');
     if(rooms[roomID] && rooms[roomID].getNumHackers() == 0){
@@ -67,20 +70,24 @@ io.on('connection', function(socket){
   });
 });
 
+setInterval(() => {
+  console.log('test');
+}, 60 * 60 * 1000);
+
 /* WEB HANDLERS */
-app.get('/', function (req, res) {
+app.get('/', (req, res) => {
   res.render('index', { room: '0' });
 });
 
-app.get('/join/:id', function (req, res) {
+app.get('/join/:id', (req, res) => {
   const roomID = req.params.id;
   res.render('index', { room: roomID });
 });
 
-app.get('/stats', function (req, res) {
+app.get('/stats', (req, res) => {
   res.render('stats', { users: users, rooms: rooms });
 });
 
-server.listen(3000, function () {
+server.listen(3000, () => {
   console.log('App listening on port 3000!');
 });
