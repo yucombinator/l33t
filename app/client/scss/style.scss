@@ -4,10 +4,26 @@
   width: 80%;
 }
 
-.scrollable {
-	height: 90%;
+.console {
+	height: 80%;
 	width: 80%;
-	overflow: scroll;
+	overflow: hidden;
+	float : left;
+}
+
+.specialkeys {
+	height : 10%;
+	width : 100%;
+	bottom : 0;
+	float : bottom;
+	position : absolute;
+}
+
+.roster {
+	height : 80%;
+	width : 20%;
+	right : 0;
+	float : right;
 }
 
 .accessGranted{

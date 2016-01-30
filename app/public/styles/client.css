@@ -3,10 +3,24 @@
   height: 10%;
   width: 80%; }
 
-.scrollable {
-  height: 90%;
+.console {
+  height: 80%;
   width: 80%;
-  overflow: scroll; }
+  overflow: hidden;
+  float: left; }
+
+.specialkeys {
+  height: 10%;
+  width: 100%;
+  bottom: 0;
+  float: bottom;
+  position: absolute; }
+
+.roster {
+  height: 80%;
+  width: 20%;
+  right: 0;
+  float: right; }
 
 .accessGranted {
   position: absolute;
@@ -110,7 +124,7 @@ a:hover {
   -webkit-animation: crt-output 10ms infinite;
           animation: crt-output 10ms infinite;
   background-color: #031e11;
-  overflow: scroll;
+  overflow: hidden;
   position: absolute;
   padding: 3rem 2rem;
   pointer-events: auto;
