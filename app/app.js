@@ -44,8 +44,7 @@ io.on('connection', (socket) => {
     
     const msg = socket.userName + ' has connected to this game';
     
-    socket.broadcast.to(socket.room).emit('event', {
-      event: 'message',
+    socket.broadcast.to(socket.room).emit('message', {
       value: msg,
     });
     //io.to('some room').emit('some event'):
@@ -63,17 +62,12 @@ io.on('connection', (socket) => {
       
       const newavg = oldAvg * (numHackers-1)/numHackers + rate /numHackers;
       rooms[socket.room].average = newavg;
-      io.to(socket.room).emit('event', {
-        event: 'score',
-        value: newavg,
-      });
     }
   });
   
   socket.on('disconnect', () => {
     const roomID = socket.room;
-    socket.broadcast.to(socket.room).emit('event', {
-      event: 'message',
+    socket.broadcast.to(socket.room).emit('message', {
       value: socket.userName + ' has left this game',
     });
     if(rooms[roomID] && rooms[roomID].getNumHackers() == 0){
@@ -84,8 +78,11 @@ io.on('connection', (socket) => {
 
 setInterval(() => {
   for (var key in rooms) {
-      const value = rooms[key];
-      console.log(value);
+      const room = rooms[key];
+      //send score
+      io.to(key).emit('newAverage', {
+        value: room.average,
+      });
   }
 }, 1000);
 

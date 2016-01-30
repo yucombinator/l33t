@@ -10,7 +10,7 @@ socket.on('connect', function () {
     username: 'glados',
     room: roomID,
   });
-  socket.on('slider-position', function(msg){
+  socket.on('newAverage', function(msg){
     console.log(msg);
   });
 });
