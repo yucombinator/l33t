@@ -1,13 +1,15 @@
 {
-  "name": "beam",
+  "name": "hacktual",
   "private": true,
   "scripts": {
     "test": "./node_modules/jscs/bin/jscs .",
     "watch": "node ./node_modules/webpack/bin/webpack.js --watch --devtool inline-source-map",
-    "build": "NODE_ENV=production node ./node_modules/webpack/bin/webpack.js -p"
+    "build": "NODE_ENV=production node ./node_modules/webpack/bin/webpack.js -p",
+    "server": "nodemon ./app/app.js"
   },
   "dependencies": {
     "css-loader": "^0.23.1",
+    "express": "^4.13.4",
     "extract-text-webpack-plugin": "^1.0.1",
     "jquery": "^2.2.0",
     "node-sass": "^3.4.2",

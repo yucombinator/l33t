@@ -16,5 +16,7 @@ purely what we can package as an extension with no extra fluff.
 
 4. Run `npm run build` to ship a production version.
 
+5. Run the server with `npm run server`. You need to run `sudo npm install -g nodemon` before though.
+
 Right now the compiled javascript files are checked into the repository, until we have a better solution
 if there is ever a merge conflict, just run `npm run build`, `git add app/scripts/*` and `git commit` it.
