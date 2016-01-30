@@ -1,6 +1,7 @@
+const name_array1= ['Webscale', 'Cloud', '10X', 'VC', 'Visual Studio', 'Ping', 'Big Data', 'Machine Learning', 'IoT', 'Responsive'];
+const name_array2= ['Intern', 'Money', 'GUI', 'Mongo', 'Designer', 'PM', 'Goose'];
+
 module.exports = {
-  name_array1: ['Webscale', 'Cloud', '10X', 'VC', 'Visual Studio', 'Ping', 'Big Data', 'Machine Learning', 'IoT', 'Responsive'],
-  name_array2: ['Intern', 'Money', 'GUI', 'Mongo', 'Designer', 'PM', 'Goose'],
   
   generateRoomId: () => {
     const time = new Date().getTime();
@@ -9,9 +10,9 @@ module.exports = {
   },
   
   generateUserName: () => {
-    return this.name_array1[Math.floor(Math.random() * this.name_array1.length)] + 
+    return name_array1[Math.floor(Math.random() * name_array1.length)] + 
     " " +
-    this.name_array2[Math.floor(Math.random() * this.name_array2.length)]; 
+    name_array2[Math.floor(Math.random() * name_array2.length)]; 
   },
   
   generateRandomEvent: () => {

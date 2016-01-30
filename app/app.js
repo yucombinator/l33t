@@ -16,51 +16,40 @@ var rooms = {};
 /* SOCKET HANDLERS */
 io.on('connection', (socket) => { 
   socket.on('joinRoom', (params, cb) => {
-    const username = params.username;
+    const userName = helpers.generateUserName();
     const roomID = params.room;
     
     //join room with specified ID
     if (rooms[roomID]){
       //room exists
       const room = rooms[roomID];
-
     } else {
       //create room
       rooms[roomID] = {
         average: 0,
+        users:[],
         getHackerList: () => {
-          const room = io.sockets.adapter.rooms[roomID];
-          if (room) {
-            var hackers = Object.keys(room);
-            return hackers.reduce(function(previousValue, currentValue, currentIndex, array) {
-                    previousValue.push(currentValue.username)
-                    return previousValue;
-                   },[]);
-          } else {
-            return [];
-          }
+          return rooms[roomID].users;
         },
         getNumHackers: () => {
-          const room = io.sockets.adapter.rooms[roomID];
-          if (room)
-            return Object.keys(room).length;
-          else
-            return 0;
-        },
+          return rooms[roomID].users.length;
+        }
       };
     }
-    
+
+    var newUser = {
+      userName: userName,
+      id: socket.id
+    };
+    rooms[roomID].users.push(newUser);
+
     socket.room = roomID;
-    socket.userName = username;
+    socket.user = newUser;
     socket.join(roomID);
     
-    const msg = socket.userName + ' has connected to this game';
-    
-    /*socket.broadcast.to(socket.room).emit('message', {
-      value: msg,
-    });*/
-    io.to(roomID).emit('broadcast-join', {
-      names: rooms[roomID].getHackerList(),
+    const msg = socket.user.userName + ' has connected to this game';
+    io.to(roomID).emit('broadcast-userschanged', {
+      value: rooms[roomID].getHackerList(),
     });
     
     console.log(msg + ": " + socket.room);
@@ -81,12 +70,14 @@ io.on('connection', (socket) => {
   
   socket.on('disconnect', () => {
     const roomID = socket.room;
-    socket.broadcast.to(socket.room).emit('message', {
-      value: socket.userName + ' has left this game',
+    rooms[roomID].users.splice(rooms[roomID].users.indexOf(socket.user), 1);
+    socket.broadcast.to(socket.room).emit('broadcast-userschanged', {
+      value: rooms[roomID].getHackerList(),
     });
     if(rooms[roomID] && rooms[roomID].getNumHackers() == 0){
       rooms[roomID] = undefined;
     }
+    console.log(socket.userName + " has left the same : " + socket.room);
   });
 });
 
