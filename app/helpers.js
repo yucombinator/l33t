@@ -1,5 +1,5 @@
-const name_array1= ['Webscale', 'Cloud', '10X', 'VC', 'Visual Studio', 'Ping', 'Big Data', 'Machine Learning', 'IoT', 'Responsive'];
-const name_array2= ['Intern', 'Money', 'GUI', 'Mongo', 'Designer', 'PM', 'Goose', 'Bitcoin'];
+const name_array1= ['Webscale', 'Cloud', '10X', 'l33t', 'Hax0r', 'Ping', 'Big', 'Tiny', 'Hakka', 'Lazy', 'Agent'];
+const name_array2= ['Intern', 'Money', 'Smith', 'MongoBongo', 'Designer', 'PM', 'Goose', 'lel', 'Fury'];
 
 const events_array1 = ['Jam', 'Click', 'Type', 'Delete', 'Upload', 'Toggle', 'Compile' , 'Magnify', 'Download'];
 const events_array2 = ['5Ghz', 'Nuclear Launch', 'Node', 'ASCII', 'GUI', 'Flux Capacitor', 'More RAM', 'Ping', 'Internet', 'Bandwidth', 'the Cloud', 'Quantum', 'Data', 'Ferrocore'];

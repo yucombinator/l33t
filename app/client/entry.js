@@ -1,12 +1,13 @@
 import io from 'socket.io-client';
 import Typer from './Typer.js';
+import Mousetrap from './mousetrap-global-bind.min.js';
 
 require('./scss/style.scss');
 require('./scss/crt_style.css');
 require('./scss/animate.css');
 require('./scss/grid.scss');
 
-var MAX_KEY_SPEED = 20;
+var MAX_KEY_SPEED = 40;
 var MAX_KEY_UNIQUENESS = 20;
 
 var UNIQUENESS_SCORE_WEIGHT = 0.5;
@@ -79,16 +80,38 @@ function calculateCurrentSliderPosition() {
   	mCurrentSliderPosition = Math.round(mCurrentSliderPosition);
 }
 
+function handleShortcutPress(e){
+  if (e.preventDefault) {
+      e.preventDefault();
+  } else {
+      // internet explorer
+      e.returnValue = false;
+  }
+  console.log('bing!');
+}
+
 var shortcuts = {};
 
 function populateUserEvents(userEvents) {
-  var output = '<div class="col-1-3">SHORTCUTS</div>';
+  shortcuts = {};
+  var output = '<div class="col-1-3"><span class="highlight">SHORTCUTS</span></div>';
   userEvents.forEach((val, index) => {
+    var key = '';
+    for(; ;){
+      //generate until we get a unique letter
+      key = String.fromCharCode(97 + Math.floor(Math.random() * 26));
+      if(!shortcuts[key]){
+        shortcuts[key] = val;
+        Mousetrap.bindGlobal(['ctrl+' + key, 'command+' + key], handleShortcutPress);
+        break;
+      }
+    }
     output += '<div class="col-1-3">'+
-     val +
+     '<span class="highlight">CTRL-'+ key.toUpperCase() + '</span> ' + val +
      '</div>';
   });
-  $("#specialkeys").append(output);
+  $("#specialkeys").html(output);
+  console.log('Possible actions: ', shortcuts);
 }
 
 var socket = io();
@@ -141,7 +164,7 @@ setInterval(function() {
 
 	var score = 100 * UNIQUENESS_SCORE_WEIGHT * uniqueCount/MAX_KEY_UNIQUENESS + 
 				100 * SPEED_SCORE_WEIGHT * speed/MAX_KEY_SPEED;
-	//console.log(score);
+	console.log("speed = " + speed + " uniqueCount = " + uniqueCount + " score = "+score);
 	socket.emit('sendScore', {
 		rate: score
 	})

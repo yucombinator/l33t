@@ -1,13 +1,13 @@
 .score {
 	display: block;
 	width: 100%;
-	height : 2.5%;
+	height : 5%;
 }
 
 .header {
   display: block;
   width: 100%;
-  height : 2.5%;
+  height : 5%;
 }
 
 .console {
@@ -30,6 +30,12 @@
 	width : 20%;
 	right : 0;
 	float : right;
+}
+
+.highlight {
+    background: #14fdce;
+    color: #031e11;
+    box-shadow: 0 0 0 5px #14fdce;
 }
 
 a.button{
@@ -81,11 +87,13 @@ a.button{
   animation: blink 1s steps(5, start) infinite;
   -webkit-animation: blink 1s steps(5, start) infinite;
 }
+
 @keyframes blink {
   to {
     visibility: hidden;
   }
 }
+
 @-webkit-keyframes blink {
   to {
     visibility: hidden;

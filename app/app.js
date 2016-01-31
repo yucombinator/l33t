@@ -137,7 +137,7 @@ setInterval(() => {
       rooms[roomID].score = 0;
     }
 
-    if(rooms[roomID].average > SCORE_ZONE_LEFT && rooms[roomID].average < SCORE_ZONE_RIGHT) {
+    if(rooms[roomID].average/100 > SCORE_ZONE_LEFT && rooms[roomID].average/100 < SCORE_ZONE_RIGHT) {
       // increment the score
       rooms[roomID].score += SCORE_INCREMENT;
     } 
