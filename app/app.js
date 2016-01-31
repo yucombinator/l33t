@@ -33,6 +33,7 @@ io.on('connection', (socket) => {
       //create room
       rooms[roomID] = {
         average: 0,
+        score: 0,
         events: userEvents,
         users:[],
         getHackerList: () => {
@@ -128,6 +129,16 @@ setInterval(() => {
   });
 }, 1000);
 
+function checkIfRandomEventCompleted(roomID){
+  if(rooms[roomID].currentAction != false){
+    rooms[roomID].score -= 50;
+    //send penalty
+    io.to(roomID).emit('eventPenalty', {
+      score: rooms[roomID].score,
+    }); 
+  }
+}
+
 //generate random events
 function generateRandomEventsRepeat(){
   Object.keys(rooms).forEach((roomID) => {
@@ -141,6 +152,10 @@ function generateRandomEventsRepeat(){
     });  
     rooms[roomID].currentAction = chooseEvent;
     
+    //set a check callback
+    setTimeout(function(){
+      checkIfRandomEventCompleted(roomID);
+    }, 10 * 1000); //10 secs
   });
   
   //repeat it
