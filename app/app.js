@@ -3,6 +3,7 @@ var helpers = require('./helpers');
 
 var SCORE_ZONE_LEFT = 0.40;
 var SCORE_ZONE_RIGHT = 0.60;
+var SCORE_INCREMENT = 10;
 
 var app = express();
 app.set('view engine', 'ejs');  
@@ -103,20 +104,45 @@ io.on('connection', (socket) => {
   });
 });
 
+// send game data to rooms
 setInterval(() => {
   Object.keys(rooms).forEach((roomID) => {
-    //send score
+    //send score and average
     if (!rooms[roomID]) {
       return;
     }
     if(!rooms[roomID].average){
       rooms[roomID].average = 0;
     }
-    io.to(roomID).emit('newAverage', {
-      value: rooms[roomID].average,
+    if(!rooms[roomID].score) {
+      rooms[roomID].score = 0;
+    }
+
+    io.to(roomID).emit('newGameData', {
+      average: rooms[roomID].average,
+      score: rooms[roomID].score
     });  
   });
 }, 1000);
+
+// score is calculated every 0.5 seconds
+setInterval(() => {
+  Object.keys(rooms).forEach((roomID) => {
+    //send score and average
+    if (!rooms[roomID]) {
+      return;
+    }
+
+    if(!rooms[roomID].score) {
+      rooms[roomID].score = 0;
+    }
+
+    if(rooms[roomID].average > SCORE_ZONE_LEFT && rooms[roomID].average < SCORE_ZONE_RIGHT) {
+      // increment the score
+      rooms[roomID].score += SCORE_INCREMENT;
+    } 
+  });
+}, 500);
 
 /* WEB HANDLERS */
 app.get('/', (req, res) => {

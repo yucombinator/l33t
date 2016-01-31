@@ -25,6 +25,7 @@ var mGoalSliderPosition = 0;
 var mCurrentUser;
 var mScoreZoneLeftIndex = null;
 var mScoreZoneRightIndex = null;
+var mScore = 0;
 
 var mRoster; // does not include current user
 
@@ -40,7 +41,7 @@ function populateRoster(roster, currentUser) {
   	$("#roster").html(rosterString);
 }
 
-function renderSlider () {
+function renderSlider() {
   	var sliderString = "";
   	for (var i = 0 ; i < SLIDER_WIDTH ; i++) {
   		if (i == mCurrentSliderPosition) {
@@ -55,6 +56,10 @@ function renderSlider () {
   	}
 
   	$("#header").html(sliderString);
+}
+
+function renderScore() {
+	$("#score").html(mScore);
 }
 
 function calculateCurrentSliderPosition() {
@@ -99,8 +104,9 @@ socket.on('connect', function () {
     populateUserEvents(data.userEvents);
     console.log(data);
   });
-  socket.on('newAverage', function(msg){
-  	mGoalSliderPosition = msg.value / 100 * (SLIDER_WIDTH - 1);
+  socket.on('newGameData', function(msg){
+  	mGoalSliderPosition = msg.average / 100 * (SLIDER_WIDTH - 1);
+  	mScore =msg.score;
     console.log(mGoalSliderPosition);
   });
   socket.on('broadcast-userschanged', function(msg) {
@@ -146,3 +152,7 @@ setInterval(function() {
 	calculateCurrentSliderPosition();
   	renderSlider();
 }, 100); // inizialize timer for animating the slider position
+
+setInterval(function() {
+	renderScore();
+}, 100); // inizialize timer for animating the score 
