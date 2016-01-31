@@ -84,7 +84,7 @@ a:hover {
   background-color: #031e11;
   overflow: hidden;
   position: absolute;
-  padding: 3rem 2rem;
+  padding: 1.5rem 2rem 3rem 2rem;
   pointer-events: auto;
   text-shadow: 0rem 0.2rem 1rem #0c7b46;
   z-index: -1;
