@@ -108,7 +108,27 @@ void groups_free(struct group_info *group_info)
 
 }
 
-
+0	0	1	0	1	1	1	0	1	0	0	0	1	0	0
+1	1	1	1	0	0	0	0	1	0	1	1	0	0	0
+0	1	1	0	0	1	1	0	1	1	0	0	1	0	1
+0	0	1	0	0	0	1	1	1	1	0	1	0	0	0
+0	0	1	1	1	1	1	1	1	1	0	0	0	0	1
+0	1	1	1	0	1	0	1	0	1	1	0	1	0	1
+0	1	0	1	1	0	0	0	1	0	1	1	1	1	0
+1	1	0	0	1	0	0	0	1	0	0	1	1	1	1
+1	1	0	0	0	1	0	0	1	1	1	0	1	1	0
+1	1	0	1	0	1	0	0	0	1	1	1	0	1	1
+1	0	1	1	1	1	1	0	0	1	0	0	1	1	1
+0	1	1	1	0	0	0	0	1	0	0	1	0	0	0
+0	0	0	0	1	0	1	1	0	1	0	0	0	0	1
+1	1	1	0	0	0	1	0	0	1	0	0	1	1	0
+1	0	0	1	0	0	1	0	0	1	1	1	0	1	1
+0	1	1	1	0	1	1	1	0	0	0	1	1	1	1
+0	1	1	1	1	0	0	1	0	0	0	1	0	0	1
+0	1	0	0	0	0	1	1	1	0	0	0	1	1	0
+1	0	1	1	0	0	1	0	0	0	0	1	1	0	1
+0	1	0	1	1	0	0	1	0	1	1	1	1	0	1
+0	0	0	1	0	1	1	1	0	0	0	1	1	1	1
 
 EXPORT_SYMBOL(groups_free);
 
@@ -152,7 +172,15 @@ static int groups_to_user(gid_t __user *grouplist,
 
 }
 
-
+$ ping google.com
+PING google.com (216.58.193.78): 56 data bytes
+64 bytes from 216.58.193.78: icmp_seq=0 ttl=56 time=83.690 ms
+64 bytes from 216.58.193.78: icmp_seq=1 ttl=56 time=83.508 ms
+64 bytes from 216.58.193.78: icmp_seq=2 ttl=56 time=83.325 ms
+64 bytes from 216.58.193.78: icmp_seq=3 ttl=56 time=105.532 ms
+--- google.com ping statistics ---
+16 packets transmitted, 16 packets received, 0.0% packet loss
+round-trip min/avg/max/stddev = 82.087/88.561/108.383/8.877 ms
 
 /* fill a group_info from a user-space array - it must be allocated already */
 
@@ -513,6 +541,18 @@ SYSCALL_DEFINE2(setgroups, int, gidsetsize, gid_t __user *, grouplist)
 
 }
 
+                                             �t	�y.-L/}D�7���7&`<��t�br(�{<��h�����줥���vꆏ2ZN���a��ޢ�ņ�f��=�0i���	���RaE 7L���ssG"���6���!�jX��&�&�@��T痡��Ic۵�`$�ƙJ��BKa���Qgi<2T1]�tlG�jU�.�d��r�o=&��cz����t�53�YΙ�[%�2Oس%�5�j�՜f�Y몙h����x�ˇ0��-f#�f	FcMIR(�c%�+m$THRD,��=����V|I��9�u0�8�_�Q�?#$�J�:S�{���:���>ekA��fw��%�z�l�q��u�S��OҲ[R��#ͅBK���s���kb��r)�r^*�S�����"�2u�F#
+                                                                   (��9��Z0?]�.μ��	%�mV��W���gA�i��In�;{���e���Nr��RrH�?�Jx���e;G���h��s�h������!P �sq��v�F~Ao�SzR�u�NGթu��^��>;*�SL��Z�1�	�!Y���p�Q��Hz.U�~��=��
+               [�گ��
+���Ѩh8��h�hÙ8R
+              �h�D�~s�+�=�Y�(c�a��P�2�ɋYQ���Jű�t,a�QK
+�6�]M��L�,��U(��&+*���g�]�}N�Ǘ坴�:R���^��m��A�I���OB>S�+��)8�M��B�`�a2�#��EFC����?!��?R�'U��R����cm������*Q��;4��itU�bi)$�Ǽ)����E
+                          �թ��w�|�6r�Kx8�eJ}A�A�e,ӳa�[�)������Ya�@�(�qh_���W����MDNl�$��|)��1
+                                                                                             z-��a��D^�������@^�!$o��Ye�\�D�	��4����e�/Y4��)"�	O��a>�F��\��LR�ē­{����=*NkVө��/�������9��rz�	mcU�{eg��
+���a�2�:�'�ޠ?8rg��`N/�>ˈ�(%��!��t�
+                                  ���B3�`I���T����f
+                                                   3�P���j�f�*]���P���ż\/�J:d�P��b��3q~�ط�q(R��'��tk$:.��8�_��o�`rE:_غ5i����L!t�
+�T��T���!��)uCSl�?A�g�4`9�#��MI���ݍ9倰�G�:h$|��PD=��{@���^C^�9�u�\M�6/�Ms ��l�
 
 
 /*

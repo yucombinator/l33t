@@ -2,7 +2,7 @@ const name_array1= ['Webscale', 'Cloud', '10X', 'l33t', 'Hax0r', 'Ping', 'Big', 
 const name_array2= ['Intern', 'Money', 'Smith', 'MongoBongo', 'Designer', 'PM', 'Goose', 'lel', 'Fury', 'Anon', 'Anonymous'];
 
 const events_array1 = ['Enhance', 'Jam', 'Click', 'Type', 'Overflow', 'Delete', 'Upload', 'Toggle', 'Compile' , 'Magnify', 'Download', 'Twist', 'Buy', 'Charge', 'Hack'];
-const events_array2 = ['the Government', 'Encryption', 'TCP' ,'Bufer', 'Linux','Articulator','Doge', '5Ghz', 'Memes', 'Nuclear Launch', 'Node', 'ASCII', 'GUI', 'Flux Capacitor', 'More RAM', 'Ping', 'Internet', 'Bandwidth', 'the Cloud', 'Quantum', 'Data', 'Ferrocore'];
+const events_array2 = ['the Truth', 'the Government', 'Encryption', 'TCP' ,'Bufer', 'Linux','Articulator','Doge', '5Ghz', 'Memes', 'Nuclear Launch', 'Node', 'ASCII', 'GUI', 'Flux Capacitor', 'More RAM', 'Ping', 'Internet', 'Bandwidth', 'the Cloud', 'Quantum', 'Data', 'Ferrocore'];
 
 module.exports = {
   
