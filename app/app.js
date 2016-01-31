@@ -72,7 +72,7 @@ io.on('connection', (socket) => {
     });
   });
   
-  socket.on('sendScore', (params) => {
+  socket.on('sendKeyScore', (params) => {
     if (socket.room){
       //must be in a room
       const rate = params.rate; //out of 100
@@ -130,7 +130,7 @@ setInterval(() => {
       score: rooms[roomID].score
     });  
   });
-}, 1000);
+}, 500);
 
 function checkIfRandomEventCompleted(roomID){
   if(rooms[roomID].currentAction != false){
@@ -194,7 +194,7 @@ setInterval(() => {
       rooms[roomID].score += SCORE_INCREMENT;
     } 
   });
-}, 500);
+}, 250);
 
 
 /* WEB HANDLERS */

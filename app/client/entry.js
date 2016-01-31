@@ -13,7 +13,7 @@ var MAX_KEY_UNIQUENESS = 20;
 var UNIQUENESS_SCORE_WEIGHT = 0.5;
 var SPEED_SCORE_WEIGHT = 0.5;
 
-var SLIDER_MAX_ANIMATION_SPEED = 10;
+var SLIDER_MAX_ANIMATION_SPEED = 30;
 
 var SLIDER_SCORE_ZONE = "+";
 var SLIDER_INACTIVE = "=";
@@ -26,7 +26,10 @@ var mGoalSliderPosition = 0;
 var mCurrentUser;
 var mScoreZoneLeftIndex = null;
 var mScoreZoneRightIndex = null;
+
 var mScore = 0;
+var mScoreChanged = false;
+var mScoreChangedAnimationStep = 0;
 
 var mRoster; // does not include current user
 
@@ -61,7 +64,26 @@ function renderSlider() {
 }
 
 function renderScore() {
-	$("#score").html(mScore);
+	var scoreString = "";
+	if (mScoreChanged) {
+		scoreString += "<<";
+		for (var i = 0 ; i < mScoreChangedAnimationStep ; i++) {
+			scoreString += "&nbsp";
+		}
+		scoreString += mScore;
+		for (var i = 0 ; i < mScoreChangedAnimationStep ; i++) {
+			scoreString += "&nbsp";
+		}
+		scoreString += ">>"
+		mScoreChangedAnimationStep++;
+	} else {
+		scoreString = mScore;
+	}
+	if (mScoreChangedAnimationStep == 5) {
+		mScoreChangedAnimationStep = 0;
+		mScoreChanged = false;
+	}
+	$("#score").html(scoreString);
 }
 
 function calculateCurrentSliderPosition() {
@@ -141,7 +163,10 @@ socket.on('connect', function () {
   });
   socket.on('newGameData', function(msg){
   	mGoalSliderPosition = msg.average / 100 * (SLIDER_WIDTH - 1);
-  	mScore =msg.score;
+  	if (mScore != msg.score) {
+  		mScoreChanged = true;
+  	}
+  	mScore = msg.score;
     console.log("goal slider position = " + mGoalSliderPosition);
   });
   socket.on('newEvent', function(msg){
@@ -179,7 +204,7 @@ setInterval(function() {
 	var score = 100 * UNIQUENESS_SCORE_WEIGHT * uniqueCount/MAX_KEY_UNIQUENESS + 
 				100 * SPEED_SCORE_WEIGHT * speed/MAX_KEY_SPEED;
 	console.log("speed = " + speed + " uniqueCount = " + uniqueCount + " score = "+score);
-	socket.emit('sendScore', {
+	socket.emit('sendKeyScore', {
 		rate: score
 	})
 	mKeyPresses = [];
