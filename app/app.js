@@ -92,6 +92,7 @@ io.on('connection', (socket) => {
       io.to(socket.room).emit('eventResolved', {
         allGood: true,
       });
+      rooms[socket.room].currentAction = null;
     }
   });
   
