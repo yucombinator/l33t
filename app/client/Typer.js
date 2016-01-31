@@ -40,7 +40,7 @@ export default class Typer {
 	}
 
 	write(str) {// append to console content
-		mConsole.append(str);
+		this.mConsole.append(str);
 		return false;
 	}
 	

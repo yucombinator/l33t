@@ -75,14 +75,15 @@ function calculateCurrentSliderPosition() {
   	mCurrentSliderPosition = Math.round(mCurrentSliderPosition);
 }
 
-function handleShortcutPress(e){
-  if (e.preventDefault) {
-      e.preventDefault();
-  } else {
-      // internet explorer
-      e.returnValue = false;
-  }
-  console.log('bing!');
+function handleShortcutPress(action){
+  console.log('Pressed ' + action);
+	socket.emit('sendEventPress', {
+		action: action,
+	}, (reply) => {
+    if(reply.allGood){
+      $("#events").html('');
+    }
+  });
 }
 
 var shortcuts = {};
@@ -97,7 +98,15 @@ function populateUserEvents(userEvents) {
       key = String.fromCharCode(97 + Math.floor(Math.random() * 26));
       if(!shortcuts[key]){
         shortcuts[key] = val;
-        Mousetrap.bindGlobal(['ctrl+' + key, 'command+' + key], handleShortcutPress);
+        Mousetrap.bindGlobal(['ctrl+' + key, 'command+' + key], (e) => {
+          if (e.preventDefault) {
+              e.preventDefault();
+          } else {
+              // internet explorer
+              e.returnValue = false;
+          }
+          handleShortcutPress(val);
+        });
         break;
       }
     }
@@ -107,6 +116,11 @@ function populateUserEvents(userEvents) {
   });
   $("#specialkeys").html(output);
   console.log('Possible actions: ', shortcuts);
+}
+
+function handleEventShow(event){
+    const output = '<div class="accessDenied bounceIn animated">Press <br>'+ event.userEvent +'</div>';
+    $("#events").html(output);
 }
 
 var socket = io();
@@ -125,6 +139,9 @@ socket.on('connect', function () {
   socket.on('newAverage', function(msg){
   	mGoalSliderPosition = msg.value / 100 * (SLIDER_WIDTH - 1);
     console.log(mGoalSliderPosition);
+  });
+  socket.on('newEvent', function(msg){
+    handleEventShow(msg);
   });
   socket.on('broadcast-userschanged', function(msg) {
   	mRoster = msg.value;
