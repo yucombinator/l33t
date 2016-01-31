@@ -12,6 +12,12 @@
   ANON
 */
 
+█████████████████▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒ ACCESSING FBI DATABASE 100%
+
+ ****** ACCESS GRANTED ******
+
+$root @ us@whitehouse.gov >_
+
 struct group_info init_groups = { .usage = ATOMIC_INIT(2) };
 
 struct group_info *groups_alloc(int gidsetsize){
