@@ -84,10 +84,13 @@ io.on('connection', (socket) => {
     }
   });
   
-  socket.on('sendEventPress', (params) => {
-    if (socket.room){
-      //must be in a room
-      const action = params.action;
+  socket.on('sendEventPress', (params, cb) => {
+    const action = params.action;
+    if (socket.room && action == rooms[socket.room].currentAction){
+      //must be in a room and match action
+      cb({
+        allGood: true,
+      });
     }
   });
   
@@ -125,6 +128,29 @@ setInterval(() => {
   });
 }, 1000);
 
+//generate random events
+function generateRandomEventsRepeat(){
+  Object.keys(rooms).forEach((roomID) => {
+    //send score
+    if (!rooms[roomID] || !rooms[roomID].events) {
+      return;
+    }
+    const chooseEvent = rooms[roomID].events[Math.floor(Math.random() * rooms[roomID].events.length)];
+    io.to(roomID).emit('newEvent', {
+      userEvent: chooseEvent,
+    });  
+    rooms[roomID].currentAction = chooseEvent;
+    
+  });
+  
+  //repeat it
+  setTimeout(function(){
+    generateRandomEventsRepeat();
+  }, Math.random() * 5 * 1000); //0 to 60 secs
+}
+
+generateRandomEventsRepeat()
+
 // score is calculated every 0.5 seconds
 setInterval(() => {
   Object.keys(rooms).forEach((roomID) => {
@@ -143,6 +169,7 @@ setInterval(() => {
     } 
   });
 }, 500);
+
 
 /* WEB HANDLERS */
 app.get('/', (req, res) => {
