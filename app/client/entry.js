@@ -37,7 +37,7 @@ function populateRoster(roster, currentUser) {
   	var rosterString = "";
   	for(var i = 0 ; i < roster.length ; i++) {
   		if (currentUser && currentUser.userName == roster[i].userName) {
-  			rosterString = ">> " + roster[i].userName + "</br>" + rosterString;	
+  			rosterString = "Agents: </br>>> " + roster[i].userName + "</br>" + rosterString;	
   		} else {
   			rosterString += roster[i].userName + "</br>";
   		}
