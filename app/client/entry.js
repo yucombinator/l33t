@@ -28,7 +28,7 @@ var mScoreZoneLeftIndex = null;
 var mScoreZoneRightIndex = null;
 
 var mScore = 0;
-var mScoreChanged = false;
+var mScoreChanged = 0; // 0 for unchanged, -1 for decreased, 1 for increased
 var mScoreChangedAnimationStep = 0;
 
 var mRoster; // does not include current user
@@ -65,7 +65,7 @@ function renderSlider() {
 
 function renderScore() {
 	var scoreString = "";
-	if (mScoreChanged) {
+	if (mScoreChanged != 0) {
 		scoreString += "<<";
 		for (var i = 0 ; i < mScoreChangedAnimationStep ; i++) {
 			scoreString += "&nbsp";
@@ -76,12 +76,16 @@ function renderScore() {
 		}
 		scoreString += ">>"
 		mScoreChangedAnimationStep++;
+		if (mScoreChanged < 0) {
+			$("#score").css('color', 'red');
+		} 
 	} else {
 		scoreString = mScore;
 	}
 	if (mScoreChangedAnimationStep == 5) {
 		mScoreChangedAnimationStep = 0;
-		mScoreChanged = false;
+		mScoreChanged = 0;
+		$("#score").css('color', '#14fdce');
 	}
 	$("#score").html(scoreString);
 }
@@ -162,8 +166,10 @@ socket.on('connect', function () {
   });
   socket.on('newGameData', function(msg){
   	mGoalSliderPosition = msg.average / 100 * (SLIDER_WIDTH - 1);
-  	if (mScore != msg.score) {
-  		mScoreChanged = true;
+  	if (mScore < msg.score) {
+  		mScoreChanged = 1;
+  	} else if (mScore > msg.score) {
+  		mScoreChanged = -1;
   	}
   	mScore = msg.score;
     console.log("goal slider position = " + mGoalSliderPosition);

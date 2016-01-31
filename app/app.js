@@ -134,12 +134,15 @@ setInterval(() => {
 }, 500);
 
 function checkIfRandomEventCompleted(roomID){
-  if(rooms[roomID] && rooms[roomID].currentAction != false){
+  if(rooms[roomID] && rooms[roomID].currentAction != null){
     rooms[roomID].score -= 50;
     //send penalty
     io.to(roomID).emit('eventPenalty', {
       score: rooms[roomID].score,
     }); 
+    return false;
+  } else {
+    return true;
   }
 }
 
@@ -151,10 +154,14 @@ function generateRandomEventsRepeat(){
       return;
     }
     
-    //send score
     if (!rooms[roomID] || !rooms[roomID].events) {
       return;
     }
+
+    if(rooms[roomID].currentAction != null) {
+        return;
+    }
+
     const chooseEvent = rooms[roomID].events[Math.floor(Math.random() * rooms[roomID].events.length)];
     const clientList = Object.keys(clients.sockets);
     const randomUser = clientList[Math.floor(Math.random() * clientList.length)];
@@ -164,16 +171,19 @@ function generateRandomEventsRepeat(){
     });  
     rooms[roomID].currentAction = chooseEvent;
     
+    var checkEventCompleted = function(){
+      if(!checkIfRandomEventCompleted(roomID)) {
+        setTimeout(checkEventCompleted, 1000);
+      }
+    };
     //set a check callback
-    setTimeout(function(){
-      checkIfRandomEventCompleted(roomID);
-    }, 10 * 1000); //10 secs
+    setTimeout(checkEventCompleted, 5 * 1000); //10 secs
   });
   
   //repeat it
   setTimeout(function(){
     generateRandomEventsRepeat();
-  }, Math.random() * 60 * 1000); //0 to 60 secs
+  }, Math.random() * 50 * 1000); //0 to 60 secs
 }
 
 generateRandomEventsRepeat()
