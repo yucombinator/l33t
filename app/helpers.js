@@ -2,7 +2,7 @@ const name_array1= ['Webscale', 'Cloud', '10X', 'VC', 'Visual Studio', 'Ping', '
 const name_array2= ['Intern', 'Money', 'GUI', 'Mongo', 'Designer', 'PM', 'Goose', 'Bitcoin'];
 
 const events_array1 = ['Jam', 'Click', 'Type', 'Delete', 'Upload', 'Toggle', 'Compile' , 'Magnify', 'Download'];
-const events_array2 = ['5Ghz', 'Node', 'ASCII', 'GUI', 'Flux Capacitor', 'More RAM', 'Ping', 'Internet', 'Bandwidth', 'the Cloud', 'Quantum', 'Data', 'Ferrocore'];
+const events_array2 = ['5Ghz', 'Nuclear Launch', 'Node', 'ASCII', 'GUI', 'Flux Capacitor', 'More RAM', 'Ping', 'Internet', 'Bandwidth', 'the Cloud', 'Quantum', 'Data', 'Ferrocore'];
 
 module.exports = {
   
@@ -19,7 +19,7 @@ module.exports = {
   },
   
   generateRandomEvent: () => {
-    return events_array2[Math.floor(Math.random() * events_array2.length)] + 
+    return events_array1[Math.floor(Math.random() * events_array1.length)] + 
     " " +
     events_array2[Math.floor(Math.random() * events_array2.length)]; 
   },

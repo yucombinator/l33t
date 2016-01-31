@@ -4,6 +4,7 @@ import Typer from './Typer.js';
 require('./scss/style.scss');
 require('./scss/crt_style.css');
 require('./scss/animate.css');
+require('./scss/grid.scss');
 
 var MAX_KEY_SPEED = 20;
 var MAX_KEY_UNIQUENESS = 20;
@@ -73,6 +74,18 @@ function calculateCurrentSliderPosition() {
   	mCurrentSliderPosition = Math.round(mCurrentSliderPosition);
 }
 
+var shortcuts = {};
+
+function populateUserEvents(userEvents) {
+  var output = '<div class="col-1-3">SHORTCUTS</div>';
+  userEvents.forEach((val, index) => {
+    output += '<div class="col-1-3">'+
+     val +
+     '</div>';
+  });
+  $("#specialkeys").append(output);
+}
+
 var socket = io();
 socket.on('connect', function () {
   socket.emit('joinRoom', {
@@ -83,6 +96,7 @@ socket.on('connect', function () {
   	mScoreZoneLeftIndex = data.gameConfig.scoreZoneLeft == null ? null : data.gameConfig.scoreZoneLeft * SLIDER_WIDTH;
   	mScoreZoneRightIndex = data.gameConfig.scoreZoneRight == null ? null : data.gameConfig.scoreZoneRight * SLIDER_WIDTH;
   	populateRoster(mRoster, mCurrentUser);
+    populateUserEvents(data.userEvents);
     console.log(data);
   });
   socket.on('newAverage', function(msg){

@@ -21,17 +21,18 @@ io.on('connection', (socket) => {
   socket.on('joinRoom', (params, cb) => {
     const userName = helpers.generateUserName();
     const roomID = params.room;
+    const userEvents = helpers.generateRandomEventsForUser();
     
     //join room with specified ID
     if (rooms[roomID]){
       //room exists
       const room = rooms[roomID];
-      room.events.push(helpers.generateRandomEventsForUser());
+      room.events.push(userEvents);
     } else {
       //create room
       rooms[roomID] = {
         average: 0,
-        events: helpers.generateRandomEventsForUser(),
+        events: userEvents,
         users:[],
         getHackerList: () => {
           return rooms[roomID].users;
@@ -61,6 +62,7 @@ io.on('connection', (socket) => {
     // notify user of their usernam
     cb({
       user: newUser,
+      userEvents: userEvents,
       gameConfig : {
         scoreZoneLeft : SCORE_ZONE_LEFT,
         scoreZoneRight : SCORE_ZONE_RIGHT,  

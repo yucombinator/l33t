@@ -4,7 +4,7 @@
 }
 
 .console {
-	height: 90%;
+	height: 85%;
 	width: 80%;
 	overflow: hidden;
 	float : left;
@@ -30,10 +30,10 @@ a.button{
 }
 
 .specialkeys {
-	height : 10%;
-	width : 100%;
+  border-top: thick double #14fdce;
+	height : 15%;
+	width : 95%;
 	bottom : 0;
-	float : bottom;
 	position : absolute;
 }
 
