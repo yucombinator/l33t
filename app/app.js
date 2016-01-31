@@ -108,7 +108,7 @@ setInterval(() => {
 
 /* WEB HANDLERS */
 app.get('/', (req, res) => {
-  res.render('index', { room: '0' });
+  res.render('intro', { numPlayers: io.sockets.clients().length });
 });
 
 app.get('/play', (req, res) => {
