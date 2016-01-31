@@ -55,6 +55,8 @@ io.on('connection', (socket) => {
     });
     
     console.log(msg + ": " + socket.room);
+    // notify user of their usernam
+    cb(newUser);
   });
   
   socket.on('sendScore', (params) => {
