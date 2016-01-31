@@ -128,7 +128,6 @@ setInterval(() => {
   });
 }, 1000);
 
-<<<<<<< HEAD
 //generate random events
 function generateRandomEventsRepeat(){
   Object.keys(rooms).forEach((roomID) => {
@@ -151,7 +150,7 @@ function generateRandomEventsRepeat(){
 }
 
 generateRandomEventsRepeat()
-=======
+
 // score is calculated every 0.5 seconds
 setInterval(() => {
   Object.keys(rooms).forEach((roomID) => {
@@ -170,7 +169,7 @@ setInterval(() => {
     } 
   });
 }, 500);
->>>>>>> 808548dd0b794930c57089b9e17ef6b8d4fdbfaa
+
 
 /* WEB HANDLERS */
 app.get('/', (req, res) => {
