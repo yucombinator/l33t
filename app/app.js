@@ -85,11 +85,11 @@ io.on('connection', (socket) => {
     }
   });
   
-  socket.on('sendEventPress', (params, cb) => {
+  socket.on('sendEventPress', (params) => {
     const action = params.action;
     if (socket.room && action == rooms[socket.room].currentAction){
       //must be in a room and match action
-      cb({
+      io.to(socket.room).emit('eventResolved', {
         allGood: true,
       });
     }
@@ -133,7 +133,7 @@ setInterval(() => {
 }, 500);
 
 function checkIfRandomEventCompleted(roomID){
-  if(rooms[roomID].currentAction != false){
+  if(rooms[roomID] && rooms[roomID].currentAction != false){
     rooms[roomID].score -= 50;
     //send penalty
     io.to(roomID).emit('eventPenalty', {

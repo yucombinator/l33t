@@ -106,11 +106,7 @@ function handleShortcutPress(action){
   console.log('Pressed ' + action);
 	socket.emit('sendEventPress', {
 		action: action,
-	}, (reply) => {
-    if(reply.allGood){
-      $("#events").html('');
-    }
-  });
+	});
 }
 
 var shortcuts = {};
@@ -144,9 +140,12 @@ function populateUserEvents(userEvents) {
   $("#specialkeys").html(output);
 }
 
+const errorAudio = new Audio('/assets/error.mp3');
 function handleEventShow(event){
     const output = '<div class="accessDenied bounceIn animated">Press <br>'+ event.userEvent +'</div>';
     $("#events").html(output);
+
+    errorAudio.play();
 }
 
 var socket = io();
@@ -172,12 +171,17 @@ socket.on('connect', function () {
   socket.on('newEvent', function(msg){
     handleEventShow(msg);
   });
+  socket.on('eventResolved', function(reply){
+    if(reply.allGood){
+      $("#events").html('');
+    }
+  });
   socket.on('broadcast-userschanged', function(msg) {
   	mRoster = msg.value;
   	populateRoster(mRoster, mCurrentUser);
   });
 });
-
+    
 var _this = this;
 
 var mKeyPresses = [];

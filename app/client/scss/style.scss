@@ -38,6 +38,14 @@
     box-shadow: 0 0 0 5px #14fdce;
 }
 
+.OS{
+  position: absolute;
+  left:2rem;
+  .unit{
+    padding-left: 220px;
+  }
+}
+
 a.button{
   background: #086552;
   color: #14fdce;
