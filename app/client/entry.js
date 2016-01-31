@@ -19,17 +19,38 @@ var SLIDER_WIDTH = 130;
 var mCurrentSliderPosition = 0;
 var mGoalSliderPosition = 0;
 
+var mCurrentUser;
+var mRoster; // does not include current user
+
+function populateRoster(roster, currentUser) {
+  	var rosterString = "";
+  	for(var i = 0 ; i < roster.length ; i++) {
+  		if (currentUser && currentUser.userName == roster[i].userName) {
+  			rosterString = ">> " + roster[i].userName + "</br>" + rosterString;	
+  		} else {
+  			rosterString += roster[i].userName + "</br>";
+  		}
+  	}
+  	$("#roster").html(rosterString);
+}
+
 var socket = io();
 socket.on('connect', function () {
   socket.emit('joinRoom', {
     username: null,
     room: roomID,
+  }, function(data) {
+  	mCurrentUser = data;
+  	populateRoster(mRoster, mCurrentUser);
+    console.log(data);
   });
   socket.on('newAverage', function(msg){
   	mGoalSliderPosition = msg.value / 100 * SLIDER_WIDTH;
     console.log(mGoalSliderPosition);
   });
   socket.on('broadcast-userschanged', function(msg) {
+  	mRoster = msg.value;
+  	populateRoster(mRoster, mCurrentUser);
     console.log(msg);
   });
 });
