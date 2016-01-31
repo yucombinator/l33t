@@ -93,19 +93,18 @@ io.on('connection', (socket) => {
 });
 
 setInterval(() => {
-  for (var key in rooms) {
-      const room = rooms[key];
-      //send score
-      if (!room) {
-        continue;
-      }
-      if(!room.average){
-        room.average = 0;
-      }
-      io.to(key).emit('newAverage', {
-        value: room.average,
-      });
-  }
+  Object.keys(rooms).forEach((roomID) => {
+    //send score
+    if (!rooms[roomID]) {
+      return;
+    }
+    if(!rooms[roomID].average){
+      rooms[roomID].average = 0;
+    }
+    io.to(roomID).emit('newAverage', {
+      value: rooms[roomID].average,
+    });  
+  });
 }, 1000);
 
 /* WEB HANDLERS */
