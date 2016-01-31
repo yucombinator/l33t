@@ -44,14 +44,15 @@ function populateRoster(roster, currentUser) {
 
 function renderSlider() {
   	var sliderString = "";
+  	var roundedSliderPosition = Math.round(mCurrentSliderPosition);
   	for (var i = 0 ; i < SLIDER_WIDTH ; i++) {
-  		if (i == mCurrentSliderPosition) {
+  		if (i == roundedSliderPosition) {
   			sliderString += SLIDER_ACTIVE;
   		} else if (i >= mScoreZoneLeftIndex && i <= mScoreZoneRightIndex) {
   			sliderString += SLIDER_SCORE_ZONE;
-  		} else if (i < mCurrentSliderPosition) {
+  		} else if (i < roundedSliderPosition) {
   			sliderString += SLIDER_INACTIVE;
-  		} else if (i > mCurrentSliderPosition) {
+  		} else if (i > roundedSliderPosition) {
   			sliderString += SLIDER_INACTIVE;
   		} 
   	}
@@ -70,14 +71,13 @@ function calculateCurrentSliderPosition() {
 	} else if (mGoalSliderPosition > mCurrentSliderPosition) {
 		mCurrentSliderPosition += speedFactor;
 	}
-
+	console.log("speedFactor = " + speedFactor);
 	if(mCurrentSliderPosition < 0) {
 		mCurrentSliderPosition = 0;
 	}
 	if(mCurrentSliderPosition > SLIDER_WIDTH) {
 		mCurrentSliderPosition = SLIDER_WIDTH - 1;
 	}
-  	mCurrentSliderPosition = Math.round(mCurrentSliderPosition);
 }
 
 function handleShortcutPress(e){
@@ -111,7 +111,6 @@ function populateUserEvents(userEvents) {
      '</div>';
   });
   $("#specialkeys").html(output);
-  console.log('Possible actions: ', shortcuts);
 }
 
 var socket = io();
@@ -125,17 +124,15 @@ socket.on('connect', function () {
   	mScoreZoneRightIndex = data.gameConfig.scoreZoneRight == null ? null : data.gameConfig.scoreZoneRight * SLIDER_WIDTH;
   	populateRoster(mRoster, mCurrentUser);
     populateUserEvents(data.userEvents);
-    console.log(data);
   });
   socket.on('newGameData', function(msg){
   	mGoalSliderPosition = msg.average / 100 * (SLIDER_WIDTH - 1);
   	mScore =msg.score;
-    console.log(mGoalSliderPosition);
+    console.log("goal slider position = " + mGoalSliderPosition);
   });
   socket.on('broadcast-userschanged', function(msg) {
   	mRoster = msg.value;
   	populateRoster(mRoster, mCurrentUser);
-    console.log(msg);
   });
 });
 
