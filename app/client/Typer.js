@@ -18,6 +18,8 @@ export default class Typer {
 			function ( event ) { 
 				_this.mKeyPressedCallback(event.keyCode);
 				_this.addText.bind(_this)( event ); //Capture the keydown event and call the addText, this is executed on page load
+        _this.errorAudio = new Audio('/assets/keypress.mp3');
+        _this.errorAudio.play();
 			}
 		);
 

@@ -119,9 +119,12 @@ function populateUserEvents(userEvents) {
   console.log('Possible actions: ', shortcuts);
 }
 
+const errorAudio = new Audio('/assets/error.mp3');
 function handleEventShow(event){
     const output = '<div class="accessDenied bounceIn animated">Press <br>'+ event.userEvent +'</div>';
     $("#events").html(output);
+
+    errorAudio.play();
 }
 
 var socket = io();

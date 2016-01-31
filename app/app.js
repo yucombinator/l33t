@@ -133,7 +133,7 @@ setInterval(() => {
 }, 1000);
 
 function checkIfRandomEventCompleted(roomID){
-  if(rooms[roomID].currentAction != false){
+  if(rooms[roomID] && rooms[roomID].currentAction != false){
     rooms[roomID].score -= 50;
     //send penalty
     io.to(roomID).emit('eventPenalty', {
