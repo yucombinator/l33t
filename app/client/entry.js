@@ -7,7 +7,7 @@ require('./scss/crt_style.css');
 require('./scss/animate.css');
 require('./scss/grid.scss');
 
-var MAX_KEY_SPEED = 20;
+var MAX_KEY_SPEED = 40;
 var MAX_KEY_UNIQUENESS = 20;
 
 var UNIQUENESS_SCORE_WEIGHT = 0.5;
@@ -26,6 +26,7 @@ var mGoalSliderPosition = 0;
 var mCurrentUser;
 var mScoreZoneLeftIndex = null;
 var mScoreZoneRightIndex = null;
+var mScore = 0;
 
 var mRoster; // does not include current user
 
@@ -41,7 +42,7 @@ function populateRoster(roster, currentUser) {
   	$("#roster").html(rosterString);
 }
 
-function renderSlider () {
+function renderSlider() {
   	var sliderString = "";
   	for (var i = 0 ; i < SLIDER_WIDTH ; i++) {
   		if (i == mCurrentSliderPosition) {
@@ -56,6 +57,10 @@ function renderSlider () {
   	}
 
   	$("#header").html(sliderString);
+}
+
+function renderScore() {
+	$("#score").html(mScore);
 }
 
 function calculateCurrentSliderPosition() {
@@ -136,8 +141,9 @@ socket.on('connect', function () {
     populateUserEvents(data.userEvents);
     console.log(data);
   });
-  socket.on('newAverage', function(msg){
-  	mGoalSliderPosition = msg.value / 100 * (SLIDER_WIDTH - 1);
+  socket.on('newGameData', function(msg){
+  	mGoalSliderPosition = msg.average / 100 * (SLIDER_WIDTH - 1);
+  	mScore =msg.score;
     console.log(mGoalSliderPosition);
   });
   socket.on('newEvent', function(msg){
@@ -175,7 +181,7 @@ setInterval(function() {
 
 	var score = 100 * UNIQUENESS_SCORE_WEIGHT * uniqueCount/MAX_KEY_UNIQUENESS + 
 				100 * SPEED_SCORE_WEIGHT * speed/MAX_KEY_SPEED;
-	//console.log(score);
+	console.log("speed = " + speed + " uniqueCount = " + uniqueCount + " score = "+score);
 	socket.emit('sendScore', {
 		rate: score
 	})
@@ -186,3 +192,7 @@ setInterval(function() {
 	calculateCurrentSliderPosition();
   	renderSlider();
 }, 100); // inizialize timer for animating the slider position
+
+setInterval(function() {
+	renderScore();
+}, 100); // inizialize timer for animating the score 

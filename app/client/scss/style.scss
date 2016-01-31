@@ -1,13 +1,35 @@
+.score {
+	display: block;
+	width: 100%;
+	height : 5%;
+}
+
 .header {
   display: block;
-  width: 80%;
+  width: 100%;
+  height : 5%;
 }
 
 .console {
-	height: 85%;
+	height: 80%;
 	width: 80%;
 	overflow: hidden;
 	float : left;
+}
+
+.specialkeys {
+  border-top: thick double #14fdce;
+	height : 15%;
+	width : 100%;
+	bottom : 0;
+	position : absolute;
+}
+
+.roster {
+	height : 80%;
+	width : 20%;
+	right : 0;
+	float : right;
 }
 
 .highlight {
@@ -33,21 +55,6 @@ a.button{
 
 .center{
   text-align: center;
-}
-
-.specialkeys {
-  border-top: thick double #14fdce;
-	height : 15%;
-	width : 95%;
-	bottom : 0;
-	position : absolute;
-}
-
-.roster {
-	height : 80%;
-	width : 20%;
-	right : 0;
-	float : right;
 }
 
 .accessGranted{
@@ -80,11 +87,13 @@ a.button{
   animation: blink 1s steps(5, start) infinite;
   -webkit-animation: blink 1s steps(5, start) infinite;
 }
+
 @keyframes blink {
   to {
     visibility: hidden;
   }
 }
+
 @-webkit-keyframes blink {
   to {
     visibility: hidden;
