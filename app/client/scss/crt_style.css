@@ -10,6 +10,9 @@ body {
   -webkit-font-smoothing: none;
   line-height: 1.2;
 }
+.noisy, .frame{
+  pointer-events: none;
+}
 h1 {
   font-size: 4rem;
   margin-bottom: 1rem;

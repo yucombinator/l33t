@@ -11,9 +11,22 @@
 	float : left;
 }
 
+a.button{
+  background: #086552;
+  color: #14fdce;
+  text-decoration: none;
+  padding: 20px;
+  z-index: 420;
+  pointer-events: all;
+}
+
 .title {
+  padding-top:50px;
   font-size: 15px;
   line-height: 0.5;  
+}
+
+.center{
   text-align: center;
 }
 

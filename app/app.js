@@ -109,7 +109,8 @@ setInterval(() => {
 
 /* WEB HANDLERS */
 app.get('/', (req, res) => {
-  res.render('intro', { numPlayers: io.sockets.clients().length });
+  const socketsKeys = Object.keys(io.sockets.clients().sockets);
+  res.render('intro', { numPlayers: socketsKeys.length + 100});
 });
 
 app.get('/play', (req, res) => {

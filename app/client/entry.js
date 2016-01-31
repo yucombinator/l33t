@@ -3,6 +3,7 @@ import Typer from './Typer.js';
 
 require('./scss/style.scss');
 require('./scss/crt_style.css');
+require('./scss/animate.css');
 
 var MAX_KEY_SPEED = 40;
 var MAX_KEY_UNIQUENESS = 40;

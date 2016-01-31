@@ -6,12 +6,10 @@
 <body class="noisy"> 
   <div class="frame">
     <div class="piece output">
-      <div id="header" class="header">
-      </div>
       <div>
-        <pre id="console" class="console title">
+        <pre class="title center bounceIn animated">
       
-  /$$    /$$$$$$   /$$$$$$    /$$           /$$   /$$                      /$$$$$$             <br>
+  /$$     /$$$$$$   /$$$$$$    /$$           /$$   /$$                      /$$$$$$             <br>
  /$$$$   /$$__  $$ /$$__  $$  | $$          | $$  | $$                     /$$$_  $$           <br> 
 |_  $$  |__/  \ $$|__/  \ $$ /$$$$$$        | $$  | $$  /$$$$$$  /$$   /$$| $$$$\ $$  /$$$$$$  <br>
   | $$     /$$$$$/   /$$$$$/|_  $$_/        | $$$$$$$$ |____  $$|  $$ /$$/| $$ $$ $$ /$$__  $$ <br>
@@ -22,12 +20,23 @@
                                                                                               
         </pre>
       </div>
-      <div class="blink">
-        <%= numPlayers %> Hackers connected! 
+      <br>
+      <div class="center">
+        <p class="blink">
+          <%= numPlayers %> Hackers connected! 
+        </p>
+        <p>
+          133t Hax0r is a multiplayer hacking simulator. 
+        </p>
+        <a href="/play" class="button">
+          Play now
+        </a>   
       </div>
-    </div>
+    </div>  
+ 
+    <div class="piece scanlines noclick"></div>
+    <div class="piece glow noclick"></div>
   </div>
-
   <script src='http://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js' type='text/javascript'></script> 
 </body>
 </html>
