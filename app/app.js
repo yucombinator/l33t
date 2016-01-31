@@ -23,10 +23,12 @@ io.on('connection', (socket) => {
     if (rooms[roomID]){
       //room exists
       const room = rooms[roomID];
+      room.events.push(helpers.generateRandomEventsForUser());
     } else {
       //create room
       rooms[roomID] = {
         average: 0,
+        events: helpers.generateRandomEventsForUser(),
         users:[],
         getHackerList: () => {
           return rooms[roomID].users;
@@ -67,6 +69,13 @@ io.on('connection', (socket) => {
       
       const newavg = oldAvg * (numHackers-1)/numHackers + rate /numHackers;
       rooms[socket.room].average = newavg;
+    }
+  });
+  
+  socket.on('sendEventPress', (params) => {
+    if (socket.room){
+      //must be in a room
+      const action = params.action;
     }
   });
   

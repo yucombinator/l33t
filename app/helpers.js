@@ -1,5 +1,8 @@
 const name_array1= ['Webscale', 'Cloud', '10X', 'VC', 'Visual Studio', 'Ping', 'Big Data', 'Machine Learning', 'IoT', 'Responsive'];
-const name_array2= ['Intern', 'Money', 'GUI', 'Mongo', 'Designer', 'PM', 'Goose'];
+const name_array2= ['Intern', 'Money', 'GUI', 'Mongo', 'Designer', 'PM', 'Goose', 'Bitcoin'];
+
+const events_array1 = ['Jam', 'Click', 'Type', 'Delete', 'Upload', 'Toggle', 'Compile' , 'Magnify', 'Download'];
+const events_array2 = ['5Ghz', 'Node', 'ASCII', 'GUI', 'Flux Capacitor', 'More RAM', 'Ping', 'Internet', 'Bandwidth', 'the Cloud', 'Quantum', 'Data', 'Ferrocore'];
 
 module.exports = {
   
@@ -16,6 +19,25 @@ module.exports = {
   },
   
   generateRandomEvent: () => {
-    
+    return events_array2[Math.floor(Math.random() * events_array2.length)] + 
+    " " +
+    events_array2[Math.floor(Math.random() * events_array2.length)]; 
+  },
+  
+  generateRandomEventsForUser: (num) => {
+    if(num == undefined){
+      num = 8;
+    }
+    var events = [];
+    for(var i = 0; i < num; i++){
+      events.push(module.exports.generateRandomEvent());
+    }
+    return events;
+  },
+  
+  selectRandomEventAndUser: (eventArray, totalUsers) => {
+    return [
+      eventArray[Math.floor(Math.random() * eventArray.length)], //event
+      Math.floor(Math.random() * totalUsers)]; //user with instruction
   }
 };
