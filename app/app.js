@@ -85,11 +85,11 @@ io.on('connection', (socket) => {
     }
   });
   
-  socket.on('sendEventPress', (params, cb) => {
+  socket.on('sendEventPress', (params) => {
     const action = params.action;
     if (socket.room && action == rooms[socket.room].currentAction){
       //must be in a room and match action
-      cb({
+      io.to(socket.room).emit('eventResolved', {
         allGood: true,
       });
     }

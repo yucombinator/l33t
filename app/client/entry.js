@@ -84,11 +84,7 @@ function handleShortcutPress(action){
   console.log('Pressed ' + action);
 	socket.emit('sendEventPress', {
 		action: action,
-	}, (reply) => {
-    if(reply.allGood){
-      $("#events").html('');
-    }
-  });
+	});
 }
 
 var shortcuts = {};
@@ -149,13 +145,18 @@ socket.on('connect', function () {
   socket.on('newEvent', function(msg){
     handleEventShow(msg);
   });
+  socket.on('eventResolved', function(reply){
+    if(reply.allGood){
+      $("#events").html('');
+    }
+  });
   socket.on('broadcast-userschanged', function(msg) {
   	mRoster = msg.value;
   	populateRoster(mRoster, mCurrentUser);
     console.log(msg);
   });
 });
-
+    
 var _this = this;
 
 var mKeyPresses = [];
