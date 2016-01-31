@@ -1,6 +1,9 @@
 var express = require('express');
 var helpers = require('./helpers');
 
+var SCORE_ZONE_LEFT = 0.40;
+var SCORE_ZONE_RIGHT = 0.60;
+
 var app = express();
 app.set('view engine', 'ejs');  
 app.use(express.static(__dirname + '/public'));
@@ -56,7 +59,13 @@ io.on('connection', (socket) => {
     
     console.log(msg + ": " + socket.room);
     // notify user of their usernam
-    cb(newUser);
+    cb({
+      user: newUser,
+      gameConfig : {
+        scoreZoneLeft : SCORE_ZONE_LEFT,
+        scoreZoneRight : SCORE_ZONE_RIGHT,  
+      } 
+    });
   });
   
   socket.on('sendScore', (params) => {

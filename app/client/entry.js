@@ -4,14 +4,15 @@ import Typer from './Typer.js';
 require('./scss/style.scss');
 require('./scss/crt_style.css');
 
-var MAX_KEY_SPEED = 40;
-var MAX_KEY_UNIQUENESS = 40;
+var MAX_KEY_SPEED = 20;
+var MAX_KEY_UNIQUENESS = 20;
 
 var UNIQUENESS_SCORE_WEIGHT = 0.5;
 var SPEED_SCORE_WEIGHT = 0.5;
 
 var SLIDER_MAX_ANIMATION_SPEED = 10;
 
+var SLIDER_SCORE_ZONE = "+";
 var SLIDER_INACTIVE = "=";
 var SLIDER_ACTIVE = "||";
 var SLIDER_WIDTH = 130;
@@ -20,6 +21,9 @@ var mCurrentSliderPosition = 0;
 var mGoalSliderPosition = 0;
 
 var mCurrentUser;
+var mScoreZoneLeftIndex = null;
+var mScoreZoneRightIndex = null;
+
 var mRoster; // does not include current user
 
 function populateRoster(roster, currentUser) {
@@ -34,18 +38,54 @@ function populateRoster(roster, currentUser) {
   	$("#roster").html(rosterString);
 }
 
+function renderSlider () {
+  	var sliderString = "";
+  	for (var i = 0 ; i < SLIDER_WIDTH ; i++) {
+  		if (i == mCurrentSliderPosition) {
+  			sliderString += SLIDER_ACTIVE;
+  		} else if (i >= mScoreZoneLeftIndex && i <= mScoreZoneRightIndex) {
+  			sliderString += SLIDER_SCORE_ZONE;
+  		} else if (i < mCurrentSliderPosition) {
+  			sliderString += SLIDER_INACTIVE;
+  		} else if (i > mCurrentSliderPosition) {
+  			sliderString += SLIDER_INACTIVE;
+  		} 
+  	}
+
+  	$("#header").html(sliderString);
+}
+
+function calculateCurrentSliderPosition() {
+	var speedFactor = Math.abs(mCurrentSliderPosition - mGoalSliderPosition) / (SLIDER_WIDTH - 1) * SLIDER_MAX_ANIMATION_SPEED;
+	if (mGoalSliderPosition < mCurrentSliderPosition) {
+		mCurrentSliderPosition -= speedFactor; 
+	} else if (mGoalSliderPosition > mCurrentSliderPosition) {
+		mCurrentSliderPosition += speedFactor;
+	}
+
+	if(mCurrentSliderPosition < 0) {
+		mCurrentSliderPosition = 0;
+	}
+	if(mCurrentSliderPosition > SLIDER_WIDTH) {
+		mCurrentSliderPosition = SLIDER_WIDTH - 1;
+	}
+  	mCurrentSliderPosition = Math.round(mCurrentSliderPosition);
+}
+
 var socket = io();
 socket.on('connect', function () {
   socket.emit('joinRoom', {
     username: null,
     room: roomID,
   }, function(data) {
-  	mCurrentUser = data;
+  	mCurrentUser = data.user;
+  	mScoreZoneLeftIndex = data.gameConfig.scoreZoneLeft == null ? null : data.gameConfig.scoreZoneLeft * SLIDER_WIDTH;
+  	mScoreZoneRightIndex = data.gameConfig.scoreZoneRight == null ? null : data.gameConfig.scoreZoneRight * SLIDER_WIDTH;
   	populateRoster(mRoster, mCurrentUser);
     console.log(data);
   });
   socket.on('newAverage', function(msg){
-  	mGoalSliderPosition = msg.value / 100 * SLIDER_WIDTH;
+  	mGoalSliderPosition = msg.value / 100 * (SLIDER_WIDTH - 1);
     console.log(mGoalSliderPosition);
   });
   socket.on('broadcast-userschanged', function(msg) {
@@ -88,24 +128,6 @@ setInterval(function() {
 }, 1000); // inizialize timer for sending key press factor over socket
 
 setInterval(function() {
-	var speedFactor = Math.abs(mCurrentSliderPosition - mGoalSliderPosition) / SLIDER_WIDTH * SLIDER_MAX_ANIMATION_SPEED;
-	if (mGoalSliderPosition < mCurrentSliderPosition) {
-		mCurrentSliderPosition -= speedFactor; 
-	} else if (mGoalSliderPosition > mCurrentSliderPosition) {
-		mCurrentSliderPosition += speedFactor;
-	}
-
-  	var preActive = mCurrentSliderPosition;
-  	var postActive = SLIDER_WIDTH - preActive - SLIDER_ACTIVE.length;
-  	var sliderString = "";
-  	for (var i = 0 ; i < preActive ; i++) {
-  		sliderString = sliderString + SLIDER_INACTIVE;
-  	}
-  	sliderString = sliderString + SLIDER_ACTIVE;
-
-  	for (var i = 0 ; i < postActive ; i++) {
-  		sliderString = sliderString + SLIDER_INACTIVE;
-  	}
-
-  	$("#header").html(sliderString);
+	calculateCurrentSliderPosition();
+  	renderSlider();
 }, 100); // inizialize timer for animating the slider position
