@@ -33,6 +33,7 @@ io.on('connection', (socket) => {
       //create room
       rooms[roomID] = {
         average: 0,
+        score: 0,
         events: userEvents,
         users:[],
         getHackerList: () => {
@@ -96,14 +97,17 @@ io.on('connection', (socket) => {
   
   socket.on('disconnect', () => {
     const roomID = socket.room;
-    rooms[roomID].users.splice(rooms[roomID].users.indexOf(socket.user), 1);
-    socket.broadcast.to(socket.room).emit('broadcast-userschanged', {
-      value: rooms[roomID].getHackerList(),
-    });
-    if(rooms[roomID] && rooms[roomID].getNumHackers() == 0){
-      rooms[roomID] = undefined;
+    if(rooms[roomID]){
+      rooms[roomID].users.splice(rooms[roomID].users.indexOf(socket.user), 1);
+      socket.broadcast.to(socket.room).emit('broadcast-userschanged', {
+        value: rooms[roomID].getHackerList(),
+      });
+      if(rooms[roomID].getNumHackers() == 0){
+        rooms[roomID] = undefined;
+      }
+      console.log(socket.userName + " has left the same : " + socket.room);
     }
-    console.log(socket.userName + " has left the same : " + socket.room);
+
   });
 });
 
@@ -128,25 +132,47 @@ setInterval(() => {
   });
 }, 1000);
 
+function checkIfRandomEventCompleted(roomID){
+  if(rooms[roomID].currentAction != false){
+    rooms[roomID].score -= 50;
+    //send penalty
+    io.to(roomID).emit('eventPenalty', {
+      score: rooms[roomID].score,
+    }); 
+  }
+}
+
 //generate random events
 function generateRandomEventsRepeat(){
   Object.keys(rooms).forEach((roomID) => {
+    const clients = io.sockets.adapter.rooms[roomID];   
+    if(!clients || !clients.sockets){
+      return;
+    }
+    
     //send score
     if (!rooms[roomID] || !rooms[roomID].events) {
       return;
     }
     const chooseEvent = rooms[roomID].events[Math.floor(Math.random() * rooms[roomID].events.length)];
-    io.to(roomID).emit('newEvent', {
+    const clientList = Object.keys(clients.sockets);
+    const randomUser = clientList[Math.floor(Math.random() * clientList.length)];
+    
+    io.to(randomUser).emit('newEvent', {
       userEvent: chooseEvent,
     });  
     rooms[roomID].currentAction = chooseEvent;
     
+    //set a check callback
+    setTimeout(function(){
+      checkIfRandomEventCompleted(roomID);
+    }, 10 * 1000); //10 secs
   });
   
   //repeat it
   setTimeout(function(){
     generateRandomEventsRepeat();
-  }, Math.random() * 5 * 1000); //0 to 60 secs
+  }, Math.random() * 60 * 1000); //0 to 60 secs
 }
 
 generateRandomEventsRepeat()
