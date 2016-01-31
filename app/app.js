@@ -162,7 +162,10 @@ function generateRandomEventsRepeat(){
         return;
     }
 
-    const chooseEvent = rooms[roomID].events[Math.floor(Math.random() * rooms[roomID].events.length)];
+    var chooseEvent = rooms[roomID].events[Math.floor(Math.random() * rooms[roomID].events.length)];
+    if(chooseEvent instanceof Array) {
+      chooseEvent = rooms[roomID].events[0];
+    }
     const clientList = Object.keys(clients.sockets);
     const randomUser = clientList[Math.floor(Math.random() * clientList.length)];
     
