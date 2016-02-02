@@ -1,4 +1,5 @@
 'use strict';
+import Howler from 'howler';
 /**
  * Class to handle reading key presses and outputting text
  */
@@ -11,15 +12,17 @@ export default class Typer {
 
 		this.mConsole = console;
 		this.mKeyPressedCallback = keyPressedCallBack;
-
-		const _this = this;
+    this.typeSound = new Howler.Howl({
+      urls: ['/assets/keypress.mp3']
+    });
+    
+    const _this = this;
 
 		$( document ).keypress(
 			function ( event ) { 
 				_this.mKeyPressedCallback(event.keyCode);
 				_this.addText.bind(_this)( event ); //Capture the keydown event and call the addText, this is executed on page load
-        _this.errorAudio = new Audio('/assets/keypress.mp3');
-        _this.errorAudio.play();
+        _this.typeSound.play();
 			}
 		);
 
