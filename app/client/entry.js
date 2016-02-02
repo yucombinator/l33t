@@ -2,6 +2,10 @@ import io from 'socket.io-client';
 import Typer from './Typer.js';
 import Mousetrap from './mousetrap-global-bind.min.js';
 
+// models
+import ScoreModel from './Model/ScoreModel.js';
+import SliderModel from './Model/SliderModel.js';
+
 require('./scss/style.scss');
 require('./scss/crt_style.css');
 require('./scss/animate.css');
@@ -13,25 +17,18 @@ var MAX_KEY_UNIQUENESS = 20;
 var UNIQUENESS_SCORE_WEIGHT = 0.5;
 var SPEED_SCORE_WEIGHT = 0.5;
 
-var SLIDER_MAX_ANIMATION_SPEED = 30;
-
-var SLIDER_SCORE_ZONE = "+";
-var SLIDER_INACTIVE = "=";
-var SLIDER_ACTIVE = "||";
-var SLIDER_WIDTH = 130;
-
 var mCurrentSliderPosition = 0;
 var mGoalSliderPosition = 0;
 
 var mCurrentUser;
-var mScoreZoneLeftIndex = null;
-var mScoreZoneRightIndex = null;
-
-var mScore = 0;
-var mScoreChanged = 0; // 0 for unchanged, -1 for decreased, 1 for increased
-var mScoreChangedAnimationStep = 0;
 
 var mRoster; // does not include current user
+
+var socket = io();
+
+// init models
+var scoreModel = new ScoreModel(socket);
+var sliderModel = new SliderModel(socket);
 
 function populateRoster(roster, currentUser) {
   	var rosterString = "";
@@ -45,69 +42,7 @@ function populateRoster(roster, currentUser) {
   	$("#roster").html(rosterString);
 }
 
-function renderSlider() {
-  	var sliderString = "";
-  	var roundedSliderPosition = Math.round(mCurrentSliderPosition);
-  	for (var i = 0 ; i < SLIDER_WIDTH ; i++) {
-  		if (i == roundedSliderPosition) {
-  			sliderString += SLIDER_ACTIVE;
-  		} else if (i >= mScoreZoneLeftIndex && i <= mScoreZoneRightIndex) {
-  			sliderString += SLIDER_SCORE_ZONE;
-  		} else if (i < roundedSliderPosition) {
-  			sliderString += SLIDER_INACTIVE;
-  		} else if (i > roundedSliderPosition) {
-  			sliderString += SLIDER_INACTIVE;
-  		} 
-  	}
-
-  	$("#header").html(sliderString);
-}
-
-function renderScore() {
-	var scoreString = "";
-	if (mScoreChanged != 0) {
-		scoreString += "<<";
-		for (var i = 0 ; i < mScoreChangedAnimationStep ; i++) {
-			scoreString += "&nbsp";
-		}
-		scoreString += mScore;
-		for (var i = 0 ; i < mScoreChangedAnimationStep ; i++) {
-			scoreString += "&nbsp";
-		}
-		scoreString += ">>"
-		mScoreChangedAnimationStep++;
-		if (mScoreChanged < 0) {
-			$("#score").css('color', 'red');
-		} 
-	} else {
-		scoreString = mScore;
-	}
-	if (mScoreChangedAnimationStep == 5) {
-		mScoreChangedAnimationStep = 0;
-		mScoreChanged = 0;
-		$("#score").css('color', '#14fdce');
-	}
-	$("#score").html(scoreString);
-}
-
-function calculateCurrentSliderPosition() {
-	var speedFactor = Math.abs(mCurrentSliderPosition - mGoalSliderPosition) / (SLIDER_WIDTH - 1) * SLIDER_MAX_ANIMATION_SPEED;
-	if (mGoalSliderPosition < mCurrentSliderPosition) {
-		mCurrentSliderPosition -= speedFactor; 
-	} else if (mGoalSliderPosition > mCurrentSliderPosition) {
-		mCurrentSliderPosition += speedFactor;
-	}
-	console.log("speedFactor = " + speedFactor);
-	if(mCurrentSliderPosition < 0) {
-		mCurrentSliderPosition = 0;
-	}
-	if(mCurrentSliderPosition > SLIDER_WIDTH) {
-		mCurrentSliderPosition = SLIDER_WIDTH - 1;
-	}
-}
-
 function handleShortcutPress(action){
-  console.log('Pressed ' + action);
 	socket.emit('sendEventPress', {
 		action: action,
 	});
@@ -152,36 +87,36 @@ function handleEventShow(event){
     errorAudio.play();
 }
 
-var socket = io();
 socket.on('connect', function () {
   socket.emit('joinRoom', {
     username: null,
     room: roomID,
   }, function(data) {
   	mCurrentUser = data.user;
-  	mScoreZoneLeftIndex = data.gameConfig.scoreZoneLeft == null ? null : data.gameConfig.scoreZoneLeft * SLIDER_WIDTH;
-  	mScoreZoneRightIndex = data.gameConfig.scoreZoneRight == null ? null : data.gameConfig.scoreZoneRight * SLIDER_WIDTH;
+    sliderModel.setScoreZoneLeft(data.gameConfig.scoreZoneLeft);
+    sliderModel.setScoreZoneRight(data.gameConfig.scoreZoneRight);
+
+  	//mScoreZoneLeftIndex = data.gameConfig.scoreZoneLeft == null ? null : data.gameConfig.scoreZoneLeft * SLIDER_WIDTH;
+  	//mScoreZoneRightIndex = data.gameConfig.scoreZoneRight == null ? null : data.gameConfig.scoreZoneRight * SLIDER_WIDTH;
   	populateRoster(mRoster, mCurrentUser);
     populateUserEvents(data.userEvents);
   });
+
   socket.on('newGameData', function(msg){
   	mGoalSliderPosition = msg.average / 100 * (SLIDER_WIDTH - 1);
-  	if (mScore < msg.score) {
-  		mScoreChanged = 1;
-  	} else if (mScore > msg.score) {
-  		mScoreChanged = -1;
-  	}
-  	mScore = msg.score;
-    console.log("goal slider position = " + mGoalSliderPosition);
+    scoreModel.set(msg.score);
   });
+
   socket.on('newEvent', function(msg){
     handleEventShow(msg);
   });
+
   socket.on('eventResolved', function(reply){
     if(reply.allGood){
       $("#events").html('');
     }
   });
+
   socket.on('broadcast-userschanged', function(msg) {
   	mRoster = msg.value;
   	populateRoster(mRoster, mCurrentUser);
@@ -213,18 +148,9 @@ setInterval(function() {
 
 	var score = 100 * UNIQUENESS_SCORE_WEIGHT * uniqueCount/MAX_KEY_UNIQUENESS + 
 				100 * SPEED_SCORE_WEIGHT * speed/MAX_KEY_SPEED;
-	console.log("speed = " + speed + " uniqueCount = " + uniqueCount + " score = "+score);
 	socket.emit('sendKeyScore', {
 		rate: score
 	})
 	mKeyPresses = [];
 }, 1000); // inizialize timer for sending key press factor over socket
 
-setInterval(function() {
-	calculateCurrentSliderPosition();
-  	renderSlider();
-}, 100); // inizialize timer for animating the slider position
-
-setInterval(function() {
-	renderScore();
-}, 100); // inizialize timer for animating the score 

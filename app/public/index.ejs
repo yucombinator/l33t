@@ -11,8 +11,10 @@
         <span class="unit">Hacker Cred: </span>
       </div>
       <div id="score" class="score center">
+      {{scoreAnimationLeft}} {{score}} {{scoreAnimationRight}}
       </div>
-      <div id="header" class="header">
+      <div id="slider" class="slider">
+      {{slider}}
       </div>
       <div id="console" class="console">
         
@@ -32,6 +34,6 @@
     var roomID = '<%= room %>';
   </script>
   <script src="/js/client.js"></script>
-  <audio src="/assets/InnerCore_Low.mp3" autoplay loop></audio>
+  <!-- <audio src="/assets/InnerCore_Low.mp3" autoplay loop></audio> -->
 </body>
 </html>
