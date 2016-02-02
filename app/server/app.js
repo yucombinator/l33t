@@ -23,19 +23,33 @@ io.on('connection', (socket) => {
   socket.on('joinRoom', (params, cb) => {
     const userName = helpers.generateUserName();
     const roomID = params.room;
-    const userEvents = helpers.generateRandomEventsForUser();
+    
+    const newUser = {
+      userName: userName,
+      id: socket.id,
+    };
+    
+    const eventsList = helpers.generateRandomEventsForUser();
+    
+    const eventsByUsersList = eventsList.map((event)=>{
+      //add in user data
+      return {
+        event: event,
+        user: newUser,
+      };
+    });
     
     //join room with specified ID
     if (rooms[roomID]){
       //room exists
       const room = rooms[roomID];
-      room.events.push(userEvents);
+      room.events = room.events.concat(eventsByUsersList);
     } else {
       //create room
       rooms[roomID] = {
         average: 0,
         score: 0,
-        events: userEvents,
+        events: eventsByUsersList,
         users:[],
         getHackerList: () => {
           return rooms[roomID].users;
@@ -45,11 +59,7 @@ io.on('connection', (socket) => {
         }
       };
     }
-
-    var newUser = {
-      userName: userName,
-      id: socket.id
-    };
+    
     rooms[roomID].users.push(newUser);
 
     socket.room = roomID;
@@ -65,7 +75,7 @@ io.on('connection', (socket) => {
     // notify user of their usernam
     cb({
       user: newUser,
-      userEvents: userEvents,
+      userEvents: eventsList,
       gameConfig : {
         scoreZoneLeft : SCORE_ZONE_LEFT,
         scoreZoneRight : SCORE_ZONE_RIGHT,  
@@ -88,26 +98,39 @@ io.on('connection', (socket) => {
   
   socket.on('sendEventPress', (params) => {
     const action = params.action;
-    if (socket.room && action == rooms[socket.room].currentAction){
+    if (socket.room && action == rooms[socket.room].currentEvent.event){
       //must be in a room and match action
       io.to(socket.room).emit('eventResolved', {
         allGood: true,
       });
-      rooms[socket.room].currentAction = null;
+      rooms[socket.room].currentEvent = null;
     }
   });
   
   socket.on('disconnect', () => {
     const roomID = socket.room;
-    if(rooms[roomID]){
+    if (rooms[roomID]) {
       rooms[roomID].users.splice(rooms[roomID].users.indexOf(socket.user), 1);
+      
+      //Check if we need to reset current event
+      if (rooms[roomID].currentEvent != null && rooms[roomID].currentEvent.user.id == socket.id) {
+        rooms[roomID].currentEvent = null;
+      }
+      
+      //Clean the event list
+      rooms[roomID].events = rooms[roomID].events.filter((eventAndUser) => {
+        return !(socket.id == eventAndUser.user.id);
+      });
+      
       socket.broadcast.to(socket.room).emit('broadcast-userschanged', {
         value: rooms[roomID].getHackerList(),
       });
+      
       if(rooms[roomID].getNumHackers() == 0){
         rooms[roomID] = undefined;
       }
-      console.log(socket.userName + " has left the same : " + socket.room);
+      
+      console.log(socket.user.userName + " has left the same : " + socket.room);
     }
 
   });
@@ -135,7 +158,7 @@ setInterval(() => {
 }, 500);
 
 function checkIfRandomEventCompleted(roomID){
-  if(rooms[roomID] && rooms[roomID].currentAction != null){
+  if(rooms[roomID] && rooms[roomID].currentEvent != null){
     rooms[roomID].score -= 50;
     //send penalty
     io.to(roomID).emit('eventPenalty', {
@@ -159,7 +182,7 @@ function generateRandomEventsRepeat(){
       return;
     }
 
-    if(rooms[roomID].currentAction != null) {
+    if(rooms[roomID].currentEvent != null) {
         return;
     }
 
@@ -171,9 +194,9 @@ function generateRandomEventsRepeat(){
     const randomUser = clientList[Math.floor(Math.random() * clientList.length)];
     
     io.to(randomUser).emit('newEvent', {
-      userEvent: chooseEvent,
+      userEvent: chooseEvent.event,
     });  
-    rooms[roomID].currentAction = chooseEvent;
+    rooms[roomID].currentEvent = chooseEvent;
     
     var checkEventCompleted = function(){
       if(!checkIfRandomEventCompleted(roomID)) {
@@ -187,7 +210,7 @@ function generateRandomEventsRepeat(){
   //repeat it
   setTimeout(function(){
     generateRandomEventsRepeat();
-  }, Math.random() * 50 * 1000); //0 to 60 secs
+  }, Math.random() * 5 * 1000); //0 to 60 secs
 }
 
 generateRandomEventsRepeat()
