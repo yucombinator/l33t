@@ -98,7 +98,7 @@ io.on('connection', (socket) => {
   
   socket.on('sendEventPress', (params) => {
     const action = params.action;
-    if (socket.room && action == rooms[socket.room].currentEvent.event){
+    if (socket.room && rooms[socket.room].currentEvent && action == rooms[socket.room].currentEvent.event){
       //must be in a room and match action
       io.to(socket.room).emit('eventResolved', {
         allGood: true,
