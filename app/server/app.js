@@ -210,7 +210,7 @@ function generateRandomEventsRepeat(){
   //repeat it
   setTimeout(function(){
     generateRandomEventsRepeat();
-  }, Math.random() * 5 * 1000); //0 to 60 secs
+  }, Math.random() * 50 * 1000); //0 to 60 secs
 }
 
 generateRandomEventsRepeat()
