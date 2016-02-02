@@ -70,14 +70,21 @@ export default class Typer {
 				this.mIndex -= this.mSpeed;//	remove speed for deleting text
 
 			}
+      
+      //loop back
+      if (this.mIndex > this.mText.length){
+        this.mIndex = this.mSpeed;
+      }
 
-			var text=$("<div/>").text(this.mText.substring(0, this.mIndex)).html();// parse the text for stripping html enities
+			var text=this.mText.substring(this.mIndex - this.mSpeed, this.mIndex);// parse the text for stripping html enities
+      
 			var rtn= new RegExp("\n", "g"); // newline regex
 			var rts= new RegExp("\\s", "g"); // whitespace regex
 			var rtt= new RegExp("\\t", "g"); // tab regex
-			this.mConsole.html(text.replace(rtn, "<br/>")
+			this.mConsole.append(text.replace(rtn, "<br/>")
 										  .replace(rtt, "&nbsp;&nbsp;&nbsp;&nbsp;")
 										  .replace(rts, "&nbsp;"));// replace newline chars with br, tabs with 4 space and blanks with an html blank
+           
 			this.mConsole.scrollTop(this.mConsole[0].scrollHeight);
 		}
 		if ( key.preventDefault && key.keyCode != 122 ) { // prevent F11(fullscreen) from being blocked
