@@ -1,6 +1,8 @@
 # hacktual
 A multiplayer hacking game
 
+Play it now at [playl33t.com](http://playl33t.com/)!
+
 ### Dev instructions
 
 We're using webpack so we can do cool things like ES6 with polyfill and import/export with ease!
