@@ -1,4 +1,4 @@
-# hacktual
+# l33t
 A multiplayer hacking game
 
 Play it now at [playl33t.com](http://playl33t.com/)!
