@@ -1,5 +1,6 @@
 var express = require('express');
-var helpers = require('./helpers');
+var helpers = require('./helpers.js');
+var path = require("path");
 
 var SCORE_ZONE_LEFT = 0.40;
 var SCORE_ZONE_RIGHT = 0.60;
@@ -7,8 +8,8 @@ var SCORE_INCREMENT = 10;
 
 var app = express();
 app.set('view engine', 'ejs');  
-app.use(express.static(__dirname + '/public'));
-app.set('views', __dirname + '/public');
+app.use(express.static(path.join(__dirname , '../public')));
+app.set('views', path.join(__dirname, '../public'));
 
 var server = require('http').createServer(app);
 var io = require('socket.io')(server);
