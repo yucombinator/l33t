@@ -1,24 +1,16 @@
 import io from 'socket.io-client';
-import Typer from './Typer.js';
 import Mousetrap from './mousetrap-global-bind.min.js';
 
 // models
 import ScoreModel from './Model/ScoreModel.js';
 import SliderModel from './Model/SliderModel.js';
+import ConsoleModel from './Model/ConsoleModel.js';
+import InputController from './Controller/InputController.js'
 
 require('./scss/style.scss');
 require('./scss/crt_style.css');
 require('./scss/animate.css');
 require('./scss/grid.scss');
-
-var MAX_KEY_SPEED = 40;
-var MAX_KEY_UNIQUENESS = 20;
-
-var UNIQUENESS_SCORE_WEIGHT = 0.5;
-var SPEED_SCORE_WEIGHT = 0.5;
-
-var mCurrentSliderPosition = 0;
-var mGoalSliderPosition = 0;
 
 var mCurrentUser;
 
@@ -29,6 +21,8 @@ var socket = io();
 // init models
 var scoreModel = new ScoreModel(socket);
 var sliderModel = new SliderModel(socket);
+var consoleModel = new ConsoleModel();
+var inputController = new InputController(socket, consoleModel);
 
 function populateRoster(roster, currentUser) {
   	var rosterString = "";
@@ -40,12 +34,6 @@ function populateRoster(roster, currentUser) {
   		}
   	}
   	$("#roster").html(rosterString);
-}
-
-function handleShortcutPress(action){
-	socket.emit('sendEventPress', {
-		action: action,
-	});
 }
 
 var shortcuts = {};
@@ -124,33 +112,4 @@ socket.on('connect', function () {
 });
     
 var _this = this;
-
-var mKeyPresses = [];
-var typer = new Typer($("#console"), function(keyCode) {
-	mKeyPresses.push(keyCode);
-});
-
-setInterval(function() {
-	var uniqueCount = mKeyPresses.length == 0 ? 0 : 1; // measure of uniqueness
-	var current = mKeyPresses[0];	
-	mKeyPresses.sort();
-	var i = 0;
-	for (; i < mKeyPresses.length ; i++) {
-		if (mKeyPresses[i] != current) {
-			current = mKeyPresses[i];
-			uniqueCount ++;
-		}
-	}
-	var speed = mKeyPresses.length;
-	// send keys/second
-	speed = speed > MAX_KEY_SPEED ? MAX_KEY_SPEED : speed;
-	uniqueCount = uniqueCount > MAX_KEY_UNIQUENESS ? MAX_KEY_UNIQUENESS : uniqueCount; 
-
-	var score = 100 * UNIQUENESS_SCORE_WEIGHT * uniqueCount/MAX_KEY_UNIQUENESS + 
-				100 * SPEED_SCORE_WEIGHT * speed/MAX_KEY_SPEED;
-	socket.emit('sendKeyScore', {
-		rate: score
-	})
-	mKeyPresses = [];
-}, 1000); // inizialize timer for sending key press factor over socket
 

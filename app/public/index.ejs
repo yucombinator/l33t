@@ -10,14 +10,14 @@
         HackerOS v0.45
         <span class="unit">Hacker Cred: </span>
       </div>
-      <div id="score" class="score center">
-      {{scoreAnimationLeft}} {{score}} {{scoreAnimationRight}}
+      <div id="score" class="score center" v-bind:class="{ 'score-decreasing': scoreDecreased}">
+        {{scoreAnimationLeft}} {{score}} {{scoreAnimationRight}}
       </div>
       <div id="slider" class="slider">
-      {{slider}}
+        {{slider}}
       </div>
       <div id="console" class="console">
-        
+        {{visibleCode}}
       </div>
       <div id="specialkeys" class="specialkeys grid grid-pad">
       </div>

@@ -16,7 +16,8 @@ export default class ScoreModel {
 			data : {
 				score : 0,
 				scoreAnimationLeft : '',
-				scoreAnimationRight : '' 
+				scoreAnimationRight : '',
+				scoreDecreased : false
 			}
 		};
 		new Vue(this.mVueModelObject);
@@ -58,7 +59,7 @@ export default class ScoreModel {
 
 				_this.mScoreChangedAnimationStep++;
 				if (_this.mScoreChanged < 0) {
-					//$("#score").css('color', 'red');
+					_this.mVueModelObject.data.scoreDecreased = true;
 				} 
 			} else {
 				_this.mVueModelObject.data.scoreAnimationLeft = '';
@@ -68,6 +69,7 @@ export default class ScoreModel {
 			if (_this.mScoreChangedAnimationStep == 5) {
 				_this.mScoreChangedAnimationStep = 0;
 				_this.mScoreChanged = 0;
+				_this.mVueModelObject.data.scoreDecreased = false;
 				//$("#score").css('color', '#14fdce');
 			}
 		}, 100); // inizialize timer for animating the slider position
