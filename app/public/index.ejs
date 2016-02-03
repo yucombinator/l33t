@@ -17,12 +17,17 @@
         {{slider}}
       </div>
       <div id="console" class="console">
-        {{visibleCode}}
+        {{{visibleCode}}}
       </div>
       <div id="specialkeys" class="specialkeys grid grid-pad">
       </div>
-      <div id="roster" class="roster">
-
+      <div class="roster-container">
+        Agents:
+        <ul id="roster" class="roster">
+          <li v-for="user in users">
+            {{ user.userName }}
+          </li>
+        </ul>
       </div>
     </div>
     <div id="events"></div>

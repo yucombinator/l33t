@@ -5,6 +5,7 @@ import Mousetrap from './mousetrap-global-bind.min.js';
 import ScoreModel from './Model/ScoreModel.js';
 import SliderModel from './Model/SliderModel.js';
 import ConsoleModel from './Model/ConsoleModel.js';
+import RosterModel from './Model/RosterModel.js';
 import InputController from './Controller/InputController.js'
 
 require('./scss/style.scss');
@@ -12,29 +13,14 @@ require('./scss/crt_style.css');
 require('./scss/animate.css');
 require('./scss/grid.scss');
 
-var mCurrentUser;
-
-var mRoster; // does not include current user
-
 var socket = io();
-
 // init models
 var scoreModel = new ScoreModel(socket);
 var sliderModel = new SliderModel(socket);
 var consoleModel = new ConsoleModel();
-var inputController = new InputController(socket, consoleModel);
+var rosterModel = new RosterModel(socket);
 
-function populateRoster(roster, currentUser) {
-  	var rosterString = "";
-  	for(var i = 0 ; i < roster.length ; i++) {
-  		if (currentUser && currentUser.userName == roster[i].userName) {
-  			rosterString = "Agents: </br>>> " + roster[i].userName + "</br>" + rosterString;	
-  		} else {
-  			rosterString += roster[i].userName + "</br>";
-  		}
-  	}
-  	$("#roster").html(rosterString);
-}
+var inputController = new InputController(socket, consoleModel);
 
 var shortcuts = {};
 
@@ -80,19 +66,10 @@ socket.on('connect', function () {
     username: null,
     room: roomID,
   }, function(data) {
-  	mCurrentUser = data.user;
+    rosterModel.setCurrentUser(data.user);
     sliderModel.setScoreZoneLeft(data.gameConfig.scoreZoneLeft);
     sliderModel.setScoreZoneRight(data.gameConfig.scoreZoneRight);
-
-  	//mScoreZoneLeftIndex = data.gameConfig.scoreZoneLeft == null ? null : data.gameConfig.scoreZoneLeft * SLIDER_WIDTH;
-  	//mScoreZoneRightIndex = data.gameConfig.scoreZoneRight == null ? null : data.gameConfig.scoreZoneRight * SLIDER_WIDTH;
-  	populateRoster(mRoster, mCurrentUser);
     populateUserEvents(data.userEvents);
-  });
-
-  socket.on('newGameData', function(msg){
-  	mGoalSliderPosition = msg.average / 100 * (SLIDER_WIDTH - 1);
-    scoreModel.set(msg.score);
   });
 
   socket.on('newEvent', function(msg){
@@ -103,11 +80,6 @@ socket.on('connect', function () {
     if(reply.allGood){
       $("#events").html('');
     }
-  });
-
-  socket.on('broadcast-userschanged', function(msg) {
-  	mRoster = msg.value;
-  	populateRoster(mRoster, mCurrentUser);
   });
 });
     

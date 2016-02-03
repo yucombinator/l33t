@@ -12,7 +12,7 @@ const SPEED_SCORE_WEIGHT = 0.5;
 export default class InputController {
 
 	constructor (socket, consoleModel) {
-		var _this = this;
+		const _this = this;
 		this.mSocket = socket;
 		this.mConsoleModel = consoleModel;
     	this.mTypeSound = new Howler.Howl({
@@ -31,17 +31,17 @@ export default class InputController {
 	}
 
 	onKeyPressed (event) {
-		_this.mKeyPresses.push(event.keyCode);
+		this.mKeyPresses.push(event.keyCode);
 		if(event.keyCode == 18) {// key 18 = alt key
 
 		} else if(event.keyCode == 20) {// key 20 = caps lock
 
 		} else if(event.keyCode == 27) { // key 27 = esc key
 
-		} else if(_this.mConsoleModel.isCodeVisible()) { 
-			_this.mConsoleModel.addCode();
+		} else if(this.mConsoleModel.isCodeVisible()) { 
+			this.mConsoleModel.addCode();
 			// TODO: find a way to do this using Vue
-			$("#console").scrollTop(this.mConsole[0].scrollHeight); 
+			$("#console").scrollTop($("#console")[0].scrollHeight); 
 		}
 		if ( event.preventDefault && event.keyCode != 122 ) { // prevent F11(fullscreen) from being blocked
 			event.preventDefault()

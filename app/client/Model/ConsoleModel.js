@@ -13,7 +13,7 @@ export default class ConsoleModel {
 		$.get(this.mFile, function(data){// get the text file
 			_this.mText=data;// save the textfile in mText
 		});
-
+		
 		this.mVueModelObject =  
 		{
 			el : '#console',
@@ -45,30 +45,25 @@ export default class ConsoleModel {
 
 	// shows some code in the console
 	addCode() {
-		var cont = this.mConsole.html(); // get the console content
+		var cont = this.mVueModelObject.data.visibleCode; // get the console content
 
 		if(cont.substring(cont.length - 1, cont.length) == "|") { // if the last char is the blinking cursor
-			this.mConsole.html(cont.substring(0, cont.length - 1)); // remove it before adding the text
+			this.mVueModelObject.data.visibleCode = cont.substring(0, cont.length - 1); // remove it before adding the text
 		}
 
-		if(key.keyCode != 8) { // if key is not backspace
-			this.mIndex += this.mSpeed;	// add to the index the speed
-
-		}else if(this.mIndex > 0) {// else if index is not less than 0 
-			this.mIndex -= this.mSpeed;//	remove speed for deleting text
-
-		}
+		this.mIndex += this.mSpeed;
 
 		var text=$("<div/>").text(this.mText.substring(0, this.mIndex)).html();// parse the text for stripping html enities
 		var rtn= new RegExp("\n", "g"); // newline regex
 		var rts= new RegExp("\\s", "g"); // whitespace regex
 		var rtt= new RegExp("\\t", "g"); // tab regex
-		this.mConsole.html(text.replace(rtn, "<br/>")
+		this.mVueModelObject.data.visibleCode = text.replace(rtn, "<br/>")
 									  .replace(rtt, "&nbsp;&nbsp;&nbsp;&nbsp;")
-									  .replace(rts, "&nbsp;"));// replace newline chars with br, tabs with 4 space and blanks with an html blank
+									  .replace(rts, "&nbsp;");// replace newline chars with br, tabs with 4 space and blanks with an html blank
+		console.log(this.mVueModelObject.data.visibleCode);
 	}
 
 	isCodeVisible() {
-		return mVueModelObject.data.visibleCode != '';
+		return this.mVueModelObject.data.visibleCode != '';
 	}
 }
