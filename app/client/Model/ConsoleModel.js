@@ -53,11 +53,16 @@ export default class ConsoleModel {
 
 		this.mIndex += this.mSpeed;
 
-		var text=$("<div/>").text(this.mText.substring(0, this.mIndex)).html();// parse the text for stripping html enities
-		var rtn= new RegExp("\n", "g"); // newline regex
+    //loop back
+    if (this.mIndex > this.mText.length){
+      this.mIndex = this.mSpeed;
+    }
+
+    var text=this.mText.substring(this.mIndex - this.mSpeed, this.mIndex);// parse the text for stripping html enities
+    var rtn= new RegExp("\n", "g"); // newline regex
 		var rts= new RegExp("\\s", "g"); // whitespace regex
 		var rtt= new RegExp("\\t", "g"); // tab regex
-		this.mVueModelObject.data.visibleCode = text.replace(rtn, "<br/>")
+		this.mVueModelObject.data.visibleCode = this.mVueModelObject.data.visibleCode.concat(text.replace(rtn, "<br/>"))
 									  .replace(rtt, "&nbsp;&nbsp;&nbsp;&nbsp;")
 									  .replace(rts, "&nbsp;");// replace newline chars with br, tabs with 4 space and blanks with an html blank
 	}
