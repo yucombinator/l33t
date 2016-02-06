@@ -11,10 +11,13 @@ const SPEED_SCORE_WEIGHT = 0.5;
 
 export default class InputController {
 
-	constructor (socket, consoleModel) {
+	constructor (socket, consoleModel, shortCutsModel) {
 		const _this = this;
 		this.mSocket = socket;
 		this.mConsoleModel = consoleModel;
+		this.mShortCutsModel = shortCutsModel;
+		// map of shortcut key codes to user events
+		this.mShortCutsToUserEvents = {};
     	this.mTypeSound = new Howler.Howl({
       		urls: ['/assets/keypress.mp3']
     	});
@@ -82,5 +85,38 @@ export default class InputController {
 			})
 			_this.mKeyPresses = [];
 		}, 1000); // inizialize timer for sending key press factor over socket
+	}
+
+	// sets the user events that are used to provide users with random action objectived
+	setUserEvents(userEvents) {
+		var _this = this;
+		userEvents.forEach((val, index) => {
+		    var key = '';
+		    for(; ;){
+		      //generate until we get a unique letter
+		      key = String.fromCharCode(97 + Math.floor(Math.random() * 26));
+		      if(!_this.mShortCutsToUserEvents[key]){
+		        _this.mShortCutsToUserEvents[key] = val;
+		        Mousetrap.bindGlobal(['ctrl+' + key, 'command+' + key], (e) => {
+		          if (e.preventDefault) {
+		              e.preventDefault();
+		          } else {
+		              // internet explorer
+		              e.returnValue = false;
+		          }
+		          _this.handleShortcutPress.bind(_this)(val);
+		        });
+		        break;
+		      }
+		    }
+        });
+		_this.mShortCutsModel.setShortCuts(_this.mShortCutsToUserEvents);
+	}
+
+	handleShortcutPress(action){
+		console.log('Pressed ' + action);
+		this.mSocket.emit('sendEventPress', {
+			action: action,
+		});
 	}
 }

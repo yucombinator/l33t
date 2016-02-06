@@ -60,7 +60,6 @@ export default class ConsoleModel {
 		this.mVueModelObject.data.visibleCode = text.replace(rtn, "<br/>")
 									  .replace(rtt, "&nbsp;&nbsp;&nbsp;&nbsp;")
 									  .replace(rts, "&nbsp;");// replace newline chars with br, tabs with 4 space and blanks with an html blank
-		console.log(this.mVueModelObject.data.visibleCode);
 	}
 
 	isCodeVisible() {
