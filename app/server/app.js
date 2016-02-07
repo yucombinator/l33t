@@ -6,6 +6,8 @@ var SCORE_ZONE_LEFT = 0.40;
 var SCORE_ZONE_RIGHT = 0.60;
 var SCORE_INCREMENT = 10;
 
+var SMA_SIZE = 3; // ammount of historical averages we will include in the SMA calculation
+
 var app = express();
 app.set('view engine', 'ejs');  
 app.use(express.static(path.join(__dirname , '../public')));
@@ -17,6 +19,9 @@ var io = require('socket.io')(server);
 //TODO(yuchen) we might want to use redis for this at some point
 var users = {}; 
 var rooms = {};
+
+// time used to calculate the delta in between calculations of the slider position/ cumulative player score sma
+var lastTime = Date.now();
 
 /* SOCKET HANDLERS */
 io.on('connection', (socket) => { 
@@ -47,6 +52,8 @@ io.on('connection', (socket) => {
     } else {
       //create room
       rooms[roomID] = {
+        accumulatedAverages : [], // list of averages sent by the clients of this room in the last second
+        numAverageUpdates : 0,
         average: 0,
         score: 0,
         events: eventsByUsersList,
@@ -86,13 +93,7 @@ io.on('connection', (socket) => {
   socket.on('sendKeyScore', (params) => {
     if (socket.room){
       //must be in a room
-      const rate = params.rate; //out of 100
-      const room = rooms[socket.room];
-      const numHackers = room.getNumHackers();
-      const oldAvg = room.average;
-      
-      const newavg = oldAvg * (numHackers-1)/numHackers + rate /numHackers;
-      rooms[socket.room].average = newavg;
+      rooms[socket.room].accumulatedAverages.push(params.rate);
     }
   });
   
@@ -135,6 +136,45 @@ io.on('connection', (socket) => {
 
   });
 });
+
+
+// calculate the smas for each room
+setInterval(() => {
+  //var nowTime = Date.now();
+  //var deltaTime = nowTime - lastTime;
+  Object.keys(rooms).forEach((roomID) => {
+    //send score and average
+    if (!rooms[roomID]) {
+      return;
+    }
+
+    var room = rooms[roomID];
+
+    if(!room.average){
+      room.average = 0;
+    }
+
+    var sum = 0;
+    room.accumulatedAverages.forEach((accumulatedAverage) => {
+      sum += accumulatedAverage;
+    }); 
+
+    var averageToAdd = 0;
+    var numAccumulatedAverages = room.accumulatedAverages.length;
+    if (numAccumulatedAverages != 0) {
+      averageToAdd = sum / numAccumulatedAverages;
+    }
+    
+    room.average = (room.average * room.numAverageUpdates + averageToAdd) / (room.numAverageUpdates + 1);
+    room.numAverageUpdates ++;
+    if (room.numAverageUpdates > SMA_SIZE) {
+      room.numAverageUpdates = SMA_SIZE;
+    }
+
+    room.accumulatedAverages = [];
+  });
+  //lastTime = nowTime;
+}, 500);
 
 // send game data to rooms
 setInterval(() => {
@@ -217,7 +257,7 @@ function generateRandomEventsRepeat(){
 
 generateRandomEventsRepeat()
 
-// score is calculated every 0.5 seconds
+// hacker cred is calculated every 0.5 seconds
 setInterval(() => {
   Object.keys(rooms).forEach((roomID) => {
     //send score and average
