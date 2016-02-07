@@ -150,10 +150,12 @@ setInterval(() => {
       rooms[roomID].score = 0;
     }
 
-    io.to(roomID).emit('newGameData', {
-      average: rooms[roomID].average,
-      score: rooms[roomID].score
+    io.to(roomID).emit('average', {
+      average: rooms[roomID].average
     });  
+    io.to(roomID).emit('score', {
+      score:rooms[roomID].score
+    })
   });
 }, 500);
 

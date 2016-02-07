@@ -10,20 +10,30 @@
         HackerOS v0.45
         <span class="unit">Hacker Cred: </span>
       </div>
-      <div id="score" class="score center">
+      <div id="score" class="score center" v-bind:class="{ 'score-decreasing': scoreDecreased}">
+        {{scoreAnimationLeft}} {{score}} {{scoreAnimationRight}}
       </div>
-      <div id="header" class="header">
+      <div id="slider" class="slider">
+        {{slider}}
       </div>
       <div id="console" class="console">
-        
+        {{{visibleCode}}}
       </div>
-      <div id="specialkeys" class="specialkeys grid grid-pad">
+      <div id="shortcutKeys" class="shortcutKeys grid grid-pad">
+        {{{shortcutKeys}}}
       </div>
-      <div id="roster" class="roster">
-
+      <div class="roster-container">
+        Agents:
+        <ul id="roster" class="roster">
+          <li v-for="user in users">
+            {{ user.userName }}
+          </li>
+        </ul>
       </div>
     </div>
-    <div id="events"></div>
+    <div id="userEvents">
+      {{{userEvents}}}
+    </div>
     <div class="piece scanlines noclick"></div>
     <div class="piece glow noclick"></div>
   </div>
@@ -32,7 +42,7 @@
     var roomID = '<%= room %>';
   </script>
   <script src="/js/client.js"></script>
-  <audio src="/assets/InnerCore_Low.mp3" autoplay loop></audio>
+  <!-- <audio src="/assets/InnerCore_Low.mp3" autoplay loop></audio> -->
   <script>
     (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
     (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),

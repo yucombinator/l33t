@@ -1,230 +1,44 @@
 import io from 'socket.io-client';
-import Typer from './Typer.js';
 import Mousetrap from './mousetrap-global-bind.min.js';
+import Vue from 'Vue';
+
+// models
+import ScoreModel from './Model/ScoreModel.js';
+import SliderModel from './Model/SliderModel.js';
+import ConsoleModel from './Model/ConsoleModel.js';
+import RosterModel from './Model/RosterModel.js';
+import ShortcutsModel from './Model/ShortcutsModel.js';
+import AlertsModel from './Model/AlertsModel.js';
+import InputController from './Controller/InputController.js'
 
 require('./scss/style.scss');
 require('./scss/crt_style.css');
 require('./scss/animate.css');
 require('./scss/grid.scss');
 
-var MAX_KEY_SPEED = 40;
-var MAX_KEY_UNIQUENESS = 20;
-
-var UNIQUENESS_SCORE_WEIGHT = 0.5;
-var SPEED_SCORE_WEIGHT = 0.5;
-
-var SLIDER_MAX_ANIMATION_SPEED = 30;
-
-var SLIDER_SCORE_ZONE = "+";
-var SLIDER_INACTIVE = "=";
-var SLIDER_ACTIVE = "||";
-var SLIDER_WIDTH = 130;
-
-var mCurrentSliderPosition = 0;
-var mGoalSliderPosition = 0;
-
-var mCurrentUser;
-var mScoreZoneLeftIndex = null;
-var mScoreZoneRightIndex = null;
-
-var mScore = 0;
-var mScoreChanged = 0; // 0 for unchanged, -1 for decreased, 1 for increased
-var mScoreChangedAnimationStep = 0;
-
-var mRoster; // does not include current user
-
-function populateRoster(roster, currentUser) {
-  	var rosterString = "";
-  	for(var i = 0 ; i < roster.length ; i++) {
-  		if (currentUser && currentUser.userName == roster[i].userName) {
-  			rosterString = "Agents: </br>>> " + roster[i].userName + "</br>" + rosterString;	
-  		} else {
-  			rosterString += roster[i].userName + "</br>";
-  		}
-  	}
-  	$("#roster").html(rosterString);
-}
-
-function renderSlider() {
-  	var sliderString = "";
-  	var roundedSliderPosition = Math.round(mCurrentSliderPosition);
-  	for (var i = 0 ; i < SLIDER_WIDTH ; i++) {
-  		if (i == roundedSliderPosition) {
-  			sliderString += SLIDER_ACTIVE;
-  		} else if (i >= mScoreZoneLeftIndex && i <= mScoreZoneRightIndex) {
-  			sliderString += SLIDER_SCORE_ZONE;
-  		} else if (i < roundedSliderPosition) {
-  			sliderString += SLIDER_INACTIVE;
-  		} else if (i > roundedSliderPosition) {
-  			sliderString += SLIDER_INACTIVE;
-  		} 
-  	}
-
-  	$("#header").html(sliderString);
-}
-
-function renderScore() {
-	var scoreString = "";
-	if (mScoreChanged != 0) {
-		scoreString += "<<";
-		for (var i = 0 ; i < mScoreChangedAnimationStep ; i++) {
-			scoreString += "&nbsp";
-		}
-		scoreString += mScore;
-		for (var i = 0 ; i < mScoreChangedAnimationStep ; i++) {
-			scoreString += "&nbsp";
-		}
-		scoreString += ">>"
-		mScoreChangedAnimationStep++;
-		if (mScoreChanged < 0) {
-			$("#score").css('color', 'red');
-		} 
-	} else {
-		scoreString = mScore;
-	}
-	if (mScoreChangedAnimationStep == 5) {
-		mScoreChangedAnimationStep = 0;
-		mScoreChanged = 0;
-		$("#score").css('color', '#14fdce');
-	}
-	$("#score").html(scoreString);
-}
-
-function calculateCurrentSliderPosition() {
-	var speedFactor = Math.abs(mCurrentSliderPosition - mGoalSliderPosition) / (SLIDER_WIDTH - 1) * SLIDER_MAX_ANIMATION_SPEED;
-	if (mGoalSliderPosition < mCurrentSliderPosition) {
-		mCurrentSliderPosition -= speedFactor; 
-	} else if (mGoalSliderPosition > mCurrentSliderPosition) {
-		mCurrentSliderPosition += speedFactor;
-	}
-	console.log("speedFactor = " + speedFactor);
-	if(mCurrentSliderPosition < 0) {
-		mCurrentSliderPosition = 0;
-	}
-	if(mCurrentSliderPosition > SLIDER_WIDTH) {
-		mCurrentSliderPosition = SLIDER_WIDTH - 1;
-	}
-}
-
-function handleShortcutPress(action){
-  console.log('Pressed ' + action);
-	socket.emit('sendEventPress', {
-		action: action,
-	});
-}
-
-var shortcuts = {};
-
-function populateUserEvents(userEvents) {
-  shortcuts = {};
-  var output = '<div class="col-1-3"><span class="highlight">SHORTCUTS</span></div>';
-  userEvents.forEach((val, index) => {
-    var key = '';
-    for(; ;){
-      //generate until we get a unique letter
-      key = String.fromCharCode(97 + Math.floor(Math.random() * 26));
-      if(!shortcuts[key]){
-        shortcuts[key] = val;
-        Mousetrap.bindGlobal(['ctrl+' + key, 'command+' + key], (e) => {
-          if (e.preventDefault) {
-              e.preventDefault();
-          } else {
-              // internet explorer
-              e.returnValue = false;
-          }
-          handleShortcutPress(val);
-        });
-        break;
-      }
-    }
-    output += '<div class="col-1-3">'+
-     '<span class="highlight">CTRL-'+ key.toUpperCase() + '</span> ' + val +
-     '</div>';
-  });
-  $("#specialkeys").html(output);
-}
-
-const errorAudio = new Audio('/assets/error.mp3');
-function handleEventShow(event){
-    const output = '<div class="accessDenied bounceIn animated">Press <br>'+ event.userEvent +'</div>';
-    $("#events").html(output);
-
-    errorAudio.play();
-}
+Vue.config.debug = true
 
 var socket = io();
+// init models
+var scoreModel = new ScoreModel(socket);
+var sliderModel = new SliderModel(socket);
+var alertsModel = new AlertsModel(socket);
+var rosterModel = new RosterModel(socket);
+var consoleModel = new ConsoleModel();
+var shortcutsModel = new ShortcutsModel();
+
+var inputController = new InputController(socket, consoleModel, shortcutsModel);
+
 socket.on('connect', function () {
   socket.emit('joinRoom', {
     username: null,
     room: roomID,
   }, function(data) {
-  	mCurrentUser = data.user;
-  	mScoreZoneLeftIndex = data.gameConfig.scoreZoneLeft == null ? null : data.gameConfig.scoreZoneLeft * SLIDER_WIDTH;
-  	mScoreZoneRightIndex = data.gameConfig.scoreZoneRight == null ? null : data.gameConfig.scoreZoneRight * SLIDER_WIDTH;
-  	populateRoster(mRoster, mCurrentUser);
-    populateUserEvents(data.userEvents);
-  });
-  socket.on('newGameData', function(msg){
-  	mGoalSliderPosition = msg.average / 100 * (SLIDER_WIDTH - 1);
-  	if (mScore < msg.score) {
-  		mScoreChanged = 1;
-  	} else if (mScore > msg.score) {
-  		mScoreChanged = -1;
-  	}
-  	mScore = msg.score;
-    console.log("goal slider position = " + mGoalSliderPosition);
-  });
-  socket.on('newEvent', function(msg){
-    handleEventShow(msg);
-  });
-  socket.on('eventResolved', function(reply){
-    if(reply.allGood){
-      $("#events").html('');
-    }
-  });
-  socket.on('broadcast-userschanged', function(msg) {
-  	mRoster = msg.value;
-  	populateRoster(mRoster, mCurrentUser);
+    rosterModel.setCurrentUser(data.user);
+    sliderModel.setScoreZoneLeft(data.gameConfig.scoreZoneLeft);
+    sliderModel.setScoreZoneRight(data.gameConfig.scoreZoneRight);
+    inputController.setUserEvents(data.userEvents);
   });
 });
     
-var _this = this;
 
-var mKeyPresses = [];
-var typer = new Typer($("#console"), function(keyCode) {
-	mKeyPresses.push(keyCode);
-});
-
-setInterval(function() {
-	var uniqueCount = mKeyPresses.length == 0 ? 0 : 1; // measure of uniqueness
-	var current = mKeyPresses[0];	
-	mKeyPresses.sort();
-	var i = 0;
-	for (; i < mKeyPresses.length ; i++) {
-		if (mKeyPresses[i] != current) {
-			current = mKeyPresses[i];
-			uniqueCount ++;
-		}
-	}
-	var speed = mKeyPresses.length;
-	// send keys/second
-	speed = speed > MAX_KEY_SPEED ? MAX_KEY_SPEED : speed;
-	uniqueCount = uniqueCount > MAX_KEY_UNIQUENESS ? MAX_KEY_UNIQUENESS : uniqueCount; 
-
-	var score = 100 * UNIQUENESS_SCORE_WEIGHT * uniqueCount/MAX_KEY_UNIQUENESS + 
-				100 * SPEED_SCORE_WEIGHT * speed/MAX_KEY_SPEED;
-	console.log("speed = " + speed + " uniqueCount = " + uniqueCount + " score = "+score);
-	socket.emit('sendKeyScore', {
-		rate: score
-	})
-	mKeyPresses = [];
-}, 1000); // inizialize timer for sending key press factor over socket
-
-setInterval(function() {
-	calculateCurrentSliderPosition();
-  	renderSlider();
-}, 100); // inizialize timer for animating the slider position
-
-setInterval(function() {
-	renderScore();
-}, 100); // inizialize timer for animating the score 
