@@ -20,9 +20,6 @@ var io = require('socket.io')(server);
 var users = {}; 
 var rooms = {};
 
-// time used to calculate the delta in between calculations of the slider position/ cumulative player score sma
-var lastTime = Date.now();
-
 /* SOCKET HANDLERS */
 io.on('connection', (socket) => { 
   socket.on('joinRoom', (params, cb) => {
@@ -140,8 +137,6 @@ io.on('connection', (socket) => {
 
 // calculate the smas for each room
 setInterval(() => {
-  //var nowTime = Date.now();
-  //var deltaTime = nowTime - lastTime;
   Object.keys(rooms).forEach((roomID) => {
     //send score and average
     if (!rooms[roomID]) {
@@ -173,7 +168,6 @@ setInterval(() => {
 
     room.accumulatedAverages = [];
   });
-  //lastTime = nowTime;
 }, 500);
 
 // send game data to rooms
