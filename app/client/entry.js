@@ -9,7 +9,8 @@ import ConsoleModel from './Model/ConsoleModel.js';
 import RosterModel from './Model/RosterModel.js';
 import ShortcutsModel from './Model/ShortcutsModel.js';
 import AlertsModel from './Model/AlertsModel.js';
-import InputController from './Controller/InputController.js'
+import InputController from './Controller/InputController.js';
+import CopyLinkController from './Controller/CopyLinkController.js';
 
 require('./scss/style.scss');
 require('./scss/crt_style.css');
@@ -28,6 +29,7 @@ var consoleModel = new ConsoleModel();
 var shortcutsModel = new ShortcutsModel();
 
 var inputController = new InputController(socket, consoleModel, shortcutsModel);
+var copyLinkController = new CopyLinkController();
 
 socket.on('connect', function () {
   socket.emit('joinRoom', {

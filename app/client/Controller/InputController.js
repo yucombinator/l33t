@@ -112,11 +112,4 @@ export default class InputController {
         });
 		_this.mShortCutsModel.setShortCuts(_this.mShortCutsToUserEvents);
 	}
-
-	handleShortcutPress(action){
-		console.log('Pressed ' + action);
-		this.mSocket.emit('sendEventPress', {
-			action: action,
-		});
-	}
 }
