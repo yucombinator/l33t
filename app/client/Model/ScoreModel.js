@@ -66,7 +66,7 @@ export default class ScoreModel {
 				_this.mVueModelObject.data.scoreAnimationRight = '';
 			} 
 
-			if (_this.mScoreChangedAnimationStep == 5) {
+			if (_this.mScoreChangedAnimationStep == 2) {
 				_this.mScoreChangedAnimationStep = 0;
 				_this.mScoreChanged = 0;
 				_this.mVueModelObject.data.scoreDecreased = false;

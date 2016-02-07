@@ -16,6 +16,7 @@ export default class InputController {
 		this.mSocket = socket;
 		this.mConsoleModel = consoleModel;
 		this.mShortCutsModel = shortCutsModel;
+		this.mLastTime = Date.now();
 		// map of shortcut key codes to user events
 		this.mShortCutsToUserEvents = {};
     	this.mTypeSound = new Howler.Howl({
@@ -73,18 +74,29 @@ export default class InputController {
 					uniqueCount ++;
 				}
 			}
-			var speed = _this.mKeyPresses.length;
+
+			// get the score per second so that no matter the update interval we always get a rate in score/ second
+			var nowTime = Date.now();
+			var deltaSeconds = (nowTime - _this.mLastTime) / 1000;
+
+			var speed = _this.mKeyPresses.length / deltaSeconds;
+			uniqueCount = uniqueCount / deltaSeconds;
+			
+			_this.mLastTime = nowTime;
+
 			// send keys/second
 			speed = speed > MAX_KEY_SPEED ? MAX_KEY_SPEED : speed;
 			uniqueCount = uniqueCount > MAX_KEY_UNIQUENESS ? MAX_KEY_UNIQUENESS : uniqueCount; 
 
 			var score = 100 * UNIQUENESS_SCORE_WEIGHT * uniqueCount/MAX_KEY_UNIQUENESS + 
 						100 * SPEED_SCORE_WEIGHT * speed/MAX_KEY_SPEED;
+
 			_this.mSocket.emit('sendKeyScore', {
 				rate: score
-			})
+			});
+			
 			_this.mKeyPresses = [];
-		}, 1000); // inizialize timer for sending key press factor over socket
+		}, 500); // inizialize timer for sending key press factor over socket
 	}
 
 	// sets the user events that are used to provide users with random action objectived
