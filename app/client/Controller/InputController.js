@@ -1,6 +1,6 @@
 'use strict';
 
-import Vue from 'Vue';
+import Vue from 'vue';
 import Howler from 'howler';
 
 const MAX_KEY_SPEED = 40;

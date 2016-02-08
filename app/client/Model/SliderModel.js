@@ -1,6 +1,6 @@
 'use strict';
 
-import Vue from 'Vue';
+import Vue from 'vue';
 
 const SLIDER_MAX_ANIMATION_SPEED = 30;
 
