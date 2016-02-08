@@ -1,6 +1,6 @@
 import io from 'socket.io-client';
 import Mousetrap from './mousetrap-global-bind.min.js';
-import Vue from 'Vue';
+import Vue from 'vue';
 
 // models
 import ScoreModel from './Model/ScoreModel.js';
