@@ -187,6 +187,11 @@ setInterval(() => {
     io.to(roomID).emit('average', {
       average: rooms[roomID].average
     });  
+    
+    if (rooms[roomID] == undefined) {
+      return;
+    }
+    
     io.to(roomID).emit('score', {
       score:rooms[roomID].score
     })
